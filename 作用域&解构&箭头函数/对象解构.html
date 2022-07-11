@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 对象解构
+        //  const obj = {
+        //     uname: 'jxy',
+        //     age: 18
+        //  }
+
+        //  //语法
+        //  const { uname, age } = { uname: 'jxy', age: 18 }
+        //  console.log(uname)
+        //  console.log(age)
+
+
+        //  对象解构的变量名 可以重新改名 旧变量名：新变量名
+        // const { uname: username, age } = { uname: 'jxy', age: 18 }
+
+        // 解构数组对象
+        const arr = [
+            {
+                uname: '佩奇',
+                age: 18
+            }
+        ]
+        const [{ uname, age }] = arr
+        console.log(uname)
+        console.log(age)
+    </script>
+</body>
+</html>

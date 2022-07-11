@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //简单的写法
+        // function outer() {
+        //     let a = 10
+        //     function fn() {
+        //         console.log(a)
+        //     }
+        //     fn()
+        // }
+        // outer()
+        
+
+        //常见闭包形式  外部可以访问使用函数内部的变量
+        // function outer() {
+        //     let a = 10
+        //     function fn() {
+        //         console.log(a)
+        //     }
+        //     return fn
+        // }
+        // // outer()  === fn === function fn() {}
+        // const fun = outer()
+        // fun()
+        
+
+        //常见写法2
+        // function outer() {
+        //     let a= 10
+               //返回匿名函数
+        //     return function () {
+        //         console.log(a)
+        //     }
+        // }
+        // const fun = outer()
+        // fun()
+
+
+        //常见写法3
+        function outer() {
+            let a= 10
+            return function () {
+                return a
+            }
+        }
+        // console.log(outer())
+        const fun = outer()
+        fun()
+        //调用函数
+        console.log(fun())  
+    </script>
+</body>
+</html>

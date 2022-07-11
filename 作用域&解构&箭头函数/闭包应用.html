@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 统计函数调用次数
+        // let i = 0
+        // function fn() {
+        //     i++
+        //     console.log(`函数被调用了${i}次`)
+        // }
+        // i在外部，是全局变量，很容易被修改
+
+
+        //闭包的形式
+        function count() {
+            let i = 0
+            function fn() {
+                i++
+                console.log(`函数被调用了${i}次`)
+            }
+            return fn
+        }
+        const fun = count()
+        
+    </script>
+</body>
+</html>

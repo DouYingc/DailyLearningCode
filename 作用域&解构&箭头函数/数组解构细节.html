@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 1. 变量多，单元值少
+        // const [a, b, c, d] = [1, 2, 3]
+        // console.log(a) // 1
+        // console.log(b) // 2
+        // console.log(c) // 3
+        // console.log(d) // underfined
+
+        // 2. 变量少，单元值多
+        // const [e, f] = [1, 2, 3]
+        // console.log(e) // 1
+        // console.log(f) // 2
+
+        // 3. 剩余参数解决变量少，单元值多的情况
+        // const [a, b, ...c] = [1, 2, 3, 4]
+        // console.log(a) // 1
+        // console.log(b) // 2
+        // console.log(c) // [3, 4] 真数组
+
+        // 4. 防止 underfined 传递
+        // const [a = '手机', b = '华为'] = ['小米']
+        // console.log(a) // 小米
+        // console.log(b) // 华为
+
+        // 5. 按需导入赋值
+        // const [a, b, , d] = ['小米', '苹果', '华为', '格力']
+        // console.log(a) // 小米
+        // console.log(b) // 华为
+        // console.log(d) // 格力
+
+        // 6. 多维数组的解构
+        // 普通写法
+        // const arr = [1, 2, [3, 4]]
+        // console.log(arr[0]) // 1
+        // console.log(arr[1]) // 2
+        // console.log(arr[2]) // [3, 4]
+        // console.log(arr[2][0]) // 3
+
+        const [a, b, [c, d]] = [1, 2, [3, 4]]
+        console.log(a) // 1
+        console.log(b) // 2
+        console.log(c) // 3
+        console.log(d) // 4
+    </script>
+</body>
+</html>
