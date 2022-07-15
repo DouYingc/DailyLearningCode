@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function Per() {
+            this.name = 'jxy'
+            this.sayHi = function() {
+                console.log(123)
+            }
+        }
+        const uname = new Per()
+        // uname就是实例成员
+        console.log(uname)
+        //调用实例方法
+        uname.sayHi(uname.sayHi)
+
+        // 静态属性
+        Per.eyes = 2
+        Per.arms = 2
+        // 静态方法
+        Per.walks = function () {
+            console.log(`走路`)
+            console.log(this.eyes)
+        } 
+    </script>
+</body>
+</html>
