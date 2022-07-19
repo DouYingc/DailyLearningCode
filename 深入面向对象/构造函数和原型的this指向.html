@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let that
+        function Star(uname) {
+            that = this
+            this.uname = uname
+        }
+        // 原型对象里面的函数this指向的还是实例对象 jxy
+        Star.prototype.sing = function () {
+            console.log(`唱歌`)
+        }
+        const jxy = new Star('jxy')
+        // 构造函数里面的this就是实例对象 jxy
+        console.log(that === jxy)
+    </script>
+</body>
+</html>
