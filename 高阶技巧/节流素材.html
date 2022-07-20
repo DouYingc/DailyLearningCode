@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    .box {
+      width: 500px;
+      height: 500px;
+      background-color: #ccc;
+      color: #fff;
+      text-align: center;
+      font-size: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box"></div>
+  <script>
+    const box = document.querySelector('.box')
+    let i = 1 
+    function mouseMove() {
+      box.innerHTML = ++i
+    }
+    // 节流函数 throttle
+    function throttle(fn, t) {
+      let startTime = 0
+      return function () {
+        // 得到当前时间
+        let now = Date.now()
+        // 判断如果大于等于 500 就调用函数
+        if(now - startTime >= t) {
+          fn()
+          // 起始时间=当前时间    写在调用函数下面
+          startTime = now
+        }
+
+      }
+    }
+    box.addEventListener('mousemove', throttle(mouseMove, 500))
+  </script>
+</body>
+
+</html>
