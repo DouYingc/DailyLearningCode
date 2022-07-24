@@ -8,3 +8,5 @@
 7.20, JavaScript高级第四天，也是最后一天，明天开始jQuery
 
 7.23, jQuery学习第一天，jQuery与DOM BOM的操作有很多不同，这次学习只是为了了解，毕竟jQuery现在大部分公司已经不再使用了，明天把jQuery学完学ajax or echarts？
+
+7.24, jQuery学习第二天，jQuery所封装的许多功能还是挺好的，虽然过时了，不过当做了解还是可以的，明天开始学习ajax
