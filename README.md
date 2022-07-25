@@ -10,3 +10,5 @@
 7.23, jQuery学习第一天，jQuery与DOM BOM的操作有很多不同，这次学习只是为了了解，毕竟jQuery现在大部分公司已经不再使用了，明天把jQuery学完学ajax or echarts？
 
 7.24, jQuery学习第二天，jQuery所封装的许多功能还是挺好的，虽然过时了，不过当做了解还是可以的，明天开始学习ajax
+
+7.25, Ajax学习第一天，本来早开始学ajax了，开始学发现看不懂，原来是jQuery中的ajax，所以回去学习了jQuery和js高级才开始学的Ajax，明天争取多学点，不然一天学太少了
