@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lib/jquery.js"></script>
+</head>
+<body>
+    <button id="btnPost">$.ajax()发起POST请求</button>
+    <script>
+        $(function () {
+            $('#btnPost').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://www.liulongbin.top:3006/api/addbook',
+                    data: {
+                        bookname: '骆驼祥子',
+                        author: '老舍',
+                        publisher: '北京图书出版社'
+                    },
+                    success: function(res) {
+                        console.log(res)
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>
