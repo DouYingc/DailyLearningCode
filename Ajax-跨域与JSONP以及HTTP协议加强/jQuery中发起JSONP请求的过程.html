@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lib/jquery.js"></script>
+</head>
+<body>
+    <button id="btnJSONP">发起JSONP数据请求</button>
+    <script>
+        $(function () {
+            $('#btnJSONP').on('click', function () {
+                $.ajax({
+                    url: 'http://www.liulongbin.top:3006/api/jsonp?address=浙江&location=丽水',
+                    dataType: 'jsonp',
+                    jsonpCallback: 'abc',
+                    success: function (res) {
+                        console.log(res)
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

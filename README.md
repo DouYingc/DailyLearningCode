@@ -15,4 +15,6 @@
 
 7.26，Ajax学习第二天，今天起晚了，学了通过ajax获取表单数据并且渲染到页面上，还学了模板引擎
 
-7.27，Ajax学习第三题，今天学了XMLHttpRequest、数据交换格式、自己封装Ajax函数、XMLHttpRequest Level2的新特性、jQuery的高级用法以及axios的使用，明天争取把Ajax学完去学git或者node.js
+7.27，Ajax学习第三天，今天学了XMLHttpRequest、数据交换格式、自己封装Ajax函数、XMLHttpRequest Level2的新特性、jQuery的高级用法以及axios的使用，明天争取把Ajax学完去学git或者node.js
+
+7.28，Ajax学习第四天，今天学了跨域与JSONP，还了解了HTTP相关的知识，明天一天把git学完，然后开始node.js的学习！加油！！
