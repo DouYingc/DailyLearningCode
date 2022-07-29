@@ -18,3 +18,5 @@
 7.27，Ajax学习第三天，今天学了XMLHttpRequest、数据交换格式、自己封装Ajax函数、XMLHttpRequest Level2的新特性、jQuery的高级用法以及axios的使用，明天争取把Ajax学完去学git或者node.js
 
 7.28，Ajax学习第四天，今天学了跨域与JSONP，还了解了HTTP相关的知识，明天一天把git学完，然后开始node.js的学习！加油！！
+
+7.29，Git学习，今天学了Git的相关操作，木得网页文件，只有笔记
