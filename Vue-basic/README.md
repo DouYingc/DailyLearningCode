@@ -113,7 +113,7 @@
 
 - 双向绑定(v-model)
 
-  语法：`v-mode:value="xxx"` 或简写为 `v-model="xxx"`
+  语法：`v-model:value="xxx"` 或简写为 `v-model="xxx"`
 
   特点：数据不仅能从 data 流向页面，还能从页面流向 data
 
@@ -473,6 +473,7 @@ new Vue({
 
   <div id="root">
       <h2>欢迎来到{{name}}学习</h2>
+  ```
 
 
       <!-- 事件的默认行为立即执行，无需等待事件回调执行完毕； -->
@@ -579,5 +580,607 @@ new Vue({
       }
     })
   </script>
+```
+
+## 计算属性
+
+### 姓名案例-插值语法
+
+```vue
+  <div id="root">
+    姓：<input type="text" v-model="firstName"><br>
+    名：<input type="text" v-model="lastName"><br>
+    全名：<span>{{firstName}}-{{lastName}}</span>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        firstName: '张',
+        lastName: '三'
+      }
+    })
+  </script>
+```
+
+### 姓名案例-methods
+
+数据发生改变Vue一定会重写解析模板，并更新数据
+
+```vue
+  <div id="root">
+    姓：<input type="text" v-model="firstName"><br>
+    名：<input type="text" v-model="lastName"><br>
+    全名：<span>{{fullName()}}</span>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        firstName: '张',
+        lastName: '三'
+      },
+      methods: {
+        fullName() {
+          console.log('@---fullName');
+          return this.firstName + '-' + this.lastName
+        }
+      }
+    })
+  </script>
+```
+
+### 计算属性
+
+- **定义**：要用的属性不存在，要通过已有属性计算得来
+
+- **原理**：底层借助了Object.defineProperty方法提供的getter和setter
+
+- **get函数什么时候执行？**
+
+  初次读取时会执行一次
+
+  当依赖的数据发生改变时会被再次调用
+
+- **优势**：与methods实现相比，内部有缓存机制（复用），效率更高，调试方便
+
+- **备注**：
+
+  计算属性最终会出现在vm上，直接读取使用即可
+
+  如果计算属性要被修改，那必须写set函数去响应修改，且set中要引起计算时依赖的数据发生改变
+
+```vue
+  <div id="root">
+    姓：<input type="text" v-model="firstName"><br>
+    名：<input type="text" v-model="lastName"><br>
+    全名：<span>{{fullName}}</span>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    const vm = new Vue({
+      el: '#root',
+      data: {
+        firstName: '张',
+        lastName: '三',
+      },
+      computed: {
+        fullName: {
+          // get有什么用？ 当有人读取 fullName 时，get 就会被调用，且返回值就作为 fullName 的值
+          // get什么时候调用？
+          // 1.初次读取 fullName 时
+          // 2.所依赖的数据发生变化时
+          get() {
+            console.log('get被调用了')
+            console.log(this) // 此处的this 指向 vm
+            return this.firstName + '-' + this.lastName
+          },
+          // set 什么时候调用？当 fullName 被修改时
+          // set 不是必须写的, 如果确定数据只读,就可以不用书写set 
+          set(value) {
+            console.log('set', value)
+            // 张-三
+            const arr = value.split('-')
+            this.firstName = arr[0]
+            this.lastName = arr[1]
+          }
+        }
+      }
+    })
+  </script>
+```
+
+### 计算属性简写(只读时可以使用)
+
+计算属性更多的情况是不修改，呈现给用户看
+
+```js
+// 完整写法
+fullName: {
+          get() {
+            console.log('get被调用了')
+            console.log(this) // 此处的this 指向 vm
+            return this.firstName + '-' + this.lastName
+          },
+          set(value) {
+            console.log('set', value)
+            // 张-三
+            const arr = value.split('-')
+            this.firstName = arr[0]
+            this.lastName = arr[1]
+          }
+        }
+```
+
+```js
+// 简写
+computed: {
+    fullName() {
+      console.log('get被调用了')
+      return this.firstName + '-' + this.lastName
+    }
+}
+```
+
+## 监视属性
+
+### 天气案例（没用到监视属性）
+
+```vue
+  <div id="root">
+    <h1>今天天气很{{info}}</h1>
+    <button @click="changeWeather">切换天气</button>
+    <!-- 绑定事件的时候：@xxx="yyy" yyy 可以写一些简单的语句 -->
+    <!-- <button @click="isHot = !isHot">切换天气</button> -->
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    const vm = new Vue({
+      el: '#root',
+      data: {
+        isHot: true
+      },
+      computed: {
+        info() {
+          return this.isHot ? '炎热' : '凉爽'
+        }
+      },
+      methods: {
+        changeWeather() {
+          this.isHot = !this.isHot
+        }
+      },
+    })
+  </script>
+```
+
+### 监视属性watch（也可以监视计算属性）
+
+- 当被监视的属性变化时, 回调函数自动调用, 进行相关操作
+
+
+- 监视的属性必须存在，才能进行监视
+
+- 监视的两种写法：
+
+  new Vue时传入watch配置
+
+  通过vm.$watch监视
+
+```vue
+  <div id="root">
+    <h1>今天天气很{{info}}</h1>
+    <button @click="changeWeather">切换天气</button>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    const vm = new Vue({
+      el: '#root',
+      data: {
+        isHot: true
+      },
+      computed: {
+        info() {
+          return this.isHot ? '炎热' : '凉爽'
+        }
+      },
+      methods: {
+        changeWeather() {
+          this.isHot = !this.isHot
+        }
+      },
+      watch: {
+        isHot: {
+          immediate: true, // 初始化时让 handler 调用一下
+          // handel 什么时候调用？当 isHot 发生改变时
+          handler(newValue, oldValue) {
+            console.log('isHot被修改了', newValue, oldValue) // 参数：newValue,oldValue 可以查看监视前的数值,和修改后的数值
+          }
+        }
+      } 
+    })
+    vm.$watch('isHot', {
+      immediate: true, // 初始化时让 handler 调用一下
+      // handel 什么时候调用？当 isHot 发生改变时
+      handler(newValue, oldValue) {
+        console.log('isHot被修改了', newValue, oldValue) // 参数：newValue,oldValue 可以查看监视前的数值,和修改后的数值
+      }
+    })
+  </script>
+```
+
+### 深度监视
+
+- Vue中的watch默认不监测对象内部值的改变（一层）
+
+- 配置deep:true可以监测对象内部值改变（多层）
+
+- 备注：
+
+  Vue自身可以监测对象内部值的改变，但Vue提供的watch默认不可以
+
+  使用watch时根据数据的具体结构，决定是否采用深度监视
+
+**只监测a的变化 不监测b**
+
+```vue
+  <div id="root">
+    <h1>今天天气很{{info}}</h1>
+    <button @click="changeWeather">切换天气</button>
+    <hr>
+    <h2>a的值是：{{numbers.a}}</h2>
+    <button @click="numbers.a++">点我让a+1</button>
+    <h2>b的值是：{{numbers.b}}</h2>
+    <button @click="numbers.b++">点我让b+1</button>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    const vm = new Vue({
+      el: '#root',
+      data: {
+        isHot: true,
+        numbers: {
+          a: 1,
+          b: 1
+        }
+      },
+      computed: {
+        info() {
+          return this.isHot ? '炎热' : '凉爽'
+        }
+      },
+      methods: {
+        changeWeather() {
+          this.isHot = !this.isHot
+        }
+      },
+      watch: {
+        isHot: {
+          // immediate: true, // 初始化时让 handler 调用一下
+          // handel 什么时候调用？当 isHot 发生改变时
+          handler(newValue, oldValue) {
+            console.log('isHot被修改了', newValue, oldValue) // 参数：newValue,oldValue 可以查看监视前的数值,和修改后的数值
+          }
+        },
+        // 监视多级结构中某个属性的变化
+        'numbers.a': {
+          handler() {
+            console.log('a被修改了')
+          }
+        }
+      }
+    })
+  </script>
+```
+
+**监视 a 和 b的变化（即监视整个number）**
+
+配置项 deep:true 开启深度监测
+
+```js
+  <div id="root">
+    <h1>今天天气很{{info}}</h1>
+    <button @click="changeWeather">切换天气</button>
+    <hr>
+    <h2>a的值是：{{numbers.a}}</h2>
+    <button @click="numbers.a++">点我让a+1</button>
+    <h2>b的值是：{{numbers.b}}</h2>
+    <button @click="numbers.b++">点我让b+1</button>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    const vm = new Vue({
+      el: '#root',
+      data: {
+        isHot: true,
+        numbers: {
+          a: 1,
+          b: 1
+        }
+      },
+      computed: {
+        info() {
+          return this.isHot ? '炎热' : '凉爽'
+        }
+      },
+      methods: {
+        changeWeather() {
+          this.isHot = !this.isHot
+        }
+      },
+      watch: {
+        isHot: {
+          // immediate: true, // 初始化时让 handler 调用一下
+          // handel 什么时候调用？当 isHot 发生改变时
+          handler(newValue, oldValue) {
+            console.log('isHot被修改了', newValue, oldValue) // 参数：newValue,oldValue 可以查看监视前的数值,和修改后的数值
+          }
+        },
+        // 监视多级结构中某个属性的变化
+        numbers: {
+          deep: true,
+          handler() {
+            console.log('numbers被修改了')
+          }
+        }
+      }
+    })
+```
+
+### 监视属性简写
+
+要求： 不需要配置项时，可以使用简写
+
+- **watch 方式一的正常写法**
+
+  ```js
+  watch: {
+      isHot: {
+            handler(newValue, oldValue) {
+              console.log('isHot被修改了', newValue, oldValue) 
+            }
+  }
+  ```
+
+- **watch 方式一的简写 不允许书写成箭头函数**
+
+  ```js
+  watch: {
+      isHot(newValue, oldValue) {
+            console.log('isHot被修改了', newValue, oldValue)
+          }
+  }
+  ```
+
+- **watch 方式二的正常写法**
+
+  ```js
+      vm.$watch('isHot', {
+        handler(newValue, oldValue) {
+          console.log('isHot被修改了', newValue, oldValue)
+        }
+      })
+  ```
+
+- **watch 方式二的简写 不允许书写成箭头函数**
+
+  ```js
+      vm.$watch('isHot', function (newValue, oldValue) {
+        console.log('isHot被修改了', newValue, oldValue)
+      })
+  ```
+
+### watch 和 computed的区别
+
+- **computed和watch之间的区别：**
+
+  computed能完成的功能，watch都可以完成
+
+  watch能完成的功能，computed不一定能完成，例如：watch可以进行异步操作
+
+- **两个重要的小原则：**
+
+  所被Vue管理的函数，最好写成普通函数，这样this的指向才是vm 或 组件实例对象
+
+  所有不被Vue所管理的函数（定时器的回调函数、ajax的回调函数等、Promise的回调函数），最好写成箭头函数，这样this的指向才是vm 或 组件实例对象
+
+- **需要在姓名改变时，延迟1s后实现才改变全名，只能使用watch**
+
+  定时器 setTimeout 所指定的函数不是 Vue 所管理的函数，要写成箭头函数
+
+  ```js
+    watch: {
+      firstName(val) {
+        setTimeout(() => {
+          this.fullName = val + '-' + this.lastName
+        }, 1000);
+      },
+      lastName(val) {
+        this.fullName = this.firstName + '-' + val
+      }
+    }
+  ```
+
+- **computed计算属性不能开启异步任务**
+
+  因为其实现靠的是return 返回值，此时把return的返回值返回给了 setTimeout，则fullName没有返回值
+
+  ```js
+  computed:{
+  	 fullName:{
+  		setTimeout(()=>{
+  			console.log('get被调用了')
+  			return this.firstName + '-' + this.lastName
+  		},1000)
+  	} 
+  }
+  ```
+
+## 绑定样式
+
+- class样式
+
+  写法:class="xxx" xxx可以是字符串、对象、数组
+
+  ​	字符串写法适用于：类名不确定，要动态获取
+
+  ​	对象写法适用于：要绑定多个样式，个数不确定，名字也不确定
+
+  ​	数组写法适用于：要绑定多个样式，个数确定，名字也确定，但不确定用不用
+
+- style样式
+
+  :style="{fontSize: xxx}"其中xxx是动态值
+
+  :style="[a,b]"其中a、b是样式对象
+
+### class绑定
+
+- **字符串写法**
+
+  ```vue
+  <div id="root">
+  	<!-- 绑定class样式--字符串写法，适用于：样式的类名不确定，需要动态指定 -->
+  	<div class="basic" :class="mood" @click="changeMood">{{name}}</div> <br/><br/>
+  </div>
+
+  <script type="text/javascript">
+  	Vue.config.productionTip = false
+
+  	const vm = new Vue({
+  		el:'#root',
+  		data:{
+  			name:'DouYing',
+  			mood:'normal',
+  		},
+  		methods: {
+  			changeMood(){
+  				this.mood = 'happy'
+  			}
+  		},
+  	})
+  </script>
+  ```
+
+- **数组写法**
+
+  div 初始有 basic 样式，日后可能增加样式多少个不确定
+
+  ```js
+  <!-- 绑定 class 样式--数组写法，适用于：要绑定样式个数不确定，名字也不确定 -->
+  <div class="basic" :class="classArr">{{name}}</div><br>
+  <div class="basic" :class="classArr">{{name}}</div> <br/><br/>
+  const vm = new Vue({
+  	el:'#root',
+  	data:{
+  		name:'DouYing
+  		mood:'normal',
+                  classArr: ['atguigu1', 'atguigu2', 'atguigu3'],
+  	},
+  })
+  ```
+
+- **对象写法**
+
+  div 初始有 basic 样式 切换text1 和 text2 （切换的个数确定，名字也确定，不确定的是到底使用不使用）
+
+  ```js
+  <!-- 绑定 class 样式--对象写法，适用于：要绑定样式个数确定，名字也确定，但要动态决定用不用 -->
+  <div class="basic" :class="classObj">{{name}}</div>
+  <div class="basic" :class="classObj">{{name}}</div> <br/><br/>
+  const vm = new Vue({
+  	el:'#root',
+  	data:{
+          classObj:{
+  			atguigu1:false,
+  			atguigu2:false,
+  		},
+  	},
+  })
+  ```
+
+### style绑定
+
+- **常规写法**
+
+  ```vue
+    <div id="root">
+      <div class="basic" :style="styleObj">{{name}}</div>
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    Vue.config.productionTip = false
+
+    const vm = new Vue({
+      el: '#root',
+      data: {
+        name: 'DouYing',
+        styleObj: {
+          fontSize: '40px',
+          color: 'red',
+          backgroundColor: 'orange'
+        }
+      },
+    })
+  </script>
+  ```
+
+- **数组写法（很少用）**
+
+```vue
+<div id="root">
+
+	<!-- 绑定style样式--数组写法 -->
+	// 方法1 两个对象用数组引用
+	<div class="basic" :style="[styleObj,styleObj2]">{{name}}</div>
+	// 方法2 在定义时就将两个对象定义为一个数组
+	 <div class="basic" :style="[styleArr]">{{name}}</div>
+
+</div>
+
+<script type="text/javascript">
+	Vue.config.productionTip = false
+
+	const vm = new Vue({
+		el:'#root',
+		data:{
+			// 方法1
+             styleObj:{
+				fontSize: '40px',
+				color:'red',
+			},
+             styleObj2:{
+				backgroundColor:'orange' // 背景颜色
+			},
+			// 方法2
+			styleArr:[
+					{
+						fontSize: '40px',
+						color:'blue',
+					},
+					{
+						backgroundColor:'gray'
+					}
+				]
+		},
+	})
+</script>
 ```
 
