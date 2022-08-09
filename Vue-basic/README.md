@@ -1184,3 +1184,762 @@ computed: {
 </script>
 ```
 
+## 条件渲染
+
+- v-if
+
+  - 写法
+
+    v-if="表达式" 
+
+    v-else-if="表达式"
+
+    v-else="表达式"
+
+  - 适用于：切换频率较低的场景
+
+  - 特点：不展示的DOM元素直接被移除
+
+  - 注意：v-if可以和:v-else-if、v-else一起使用，但要求结构不能被“打断”
+
+
+- v-show
+  - 写法：v-show="表达式"
+  - 适用于：切换频率较高的场景
+  - 特点：不展示的DOM元素未被移除，仅仅是使用样式隐藏掉
+
+​            
+
+- 备注：使用v-if的时，元素可能无法获取到，而使用v-show一定可以获取到。
+
+### 让div 隐藏 v-show
+
+不仅可以可以写 Boolean 值 v-show=“false”，也可以写表达式 用表达式的结果来进行判断 v-show=“1 === 1”，此时结构存在但是不显示
+
+```vue
+  <div id="root">
+    <!-- 使用 v-show 做条件渲染 -->
+    <!-- <h1 v-show="a">欢迎{{name}}</h1> -->
+    <!-- <h1 v-show="1 === 1">欢迎{{name}}</h1> -->
+
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    const vm = new Vue({
+      el: '#root',
+      data: {
+        name: 'DouYing',
+        n: 0
+      }
+    })
+  </script>
+```
+
+### 使用 v-if进行条件渲染
+
+```vue
+  <div id="root">
+    <!-- 使用 v-if 做条件渲染 -->
+    <!-- <h1 v-if="false">欢迎{{name}}</h1> -->
+    <!-- <h1 v-if="1 === 1">欢迎{{name}}</h1> -->
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    const vm = new Vue({
+      el: '#root',
+      data: {
+        name: 'DouYing',
+        n: 0
+      }
+    })
+  </script>
+```
+
+### v-if与template的配合使用
+
+```vue
+    <!-- v-if 与 template 配合使用 -->
+    <template v-if="n === 1">
+      <h2>DouYing</h2>
+      <h2>浙江</h2>
+      <h2>你好</h2>
+    </template>
+```
+
+## 列表渲染
+
+v-for指令:
+
+- 用于展示列表数据
+- 语法：v-for="(item, index) in xxx" :key="yyy"
+- 可遍历：数组、对象、字符串（用的很少）、指定次数（用的很少）
+
+### 遍历数组
+
+**接受一个参数**
+
+```vue
+  <div id="root">
+    <!-- 遍历数组 -->
+    <h2>人员列表</h2>
+    <ul>
+      <li v-for="p in persons" :key="p.id">{{p.name}}--{{p.age}}</li>
+    </ul>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        persons: [
+          { id: '001', name: '张三', age: 18 },
+          { id: '002', name: '李四', age: 19 },
+          { id: '003', name: '王五', age: 20 }
+        ]
+      },
+    })
+```
+
+**接受两个参数**
+
+```vue
+  <div id="root">
+    <!-- 遍历数组 -->
+    <h2>人员列表</h2>
+    <ul>
+      <li v-for="(p,index) in persons" :key="index">{{p.name}}--{{p.age}}</li>
+    </ul>
+  </div>
+```
+
+### 遍历对象
+
+```vue
+  <div id="root">
+    <!-- 遍历对象 -->
+    <h2>汽车信息（遍历对象）</h2>
+    <ul>
+      <li v-for="(value,k) in car" :key="k">
+        {{k}}--{{value}}
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        car: {
+          name: '奥迪A8',
+          price: '70W',
+          color: '黑色'
+        },
+      },
+    })
+  </script>
+```
+
+### 遍历字符串（用得少）
+
+```vue
+  <div id="root">
+    <!-- 遍历字符串 -->
+    <h2>测试遍历字符串（用得少）</h2>
+    <ul>
+      <li v-for="(char,index) in str" :key="index">
+        {{char}}--{{index}}
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        str: 'hello'
+      },
+    })
+  </script>
+```
+
+### 遍历指定次数（使用少）
+
+```vue
+  <div id="root">
+    <!-- 遍历指定次数 -->
+    <h2>测试遍历指定次数（用得少）</h2>
+    <ul>
+      <li v-for="(number,index) in 5" :key="index">
+        {{number}}--{{index}}
+      </li>
+    </ul>
+  </div>
+```
+
+### key的原理
+
+**面试题：react、vue中的key有什么作用？（key的内部原理）**
+
+- 虚拟DOM中key的作用：
+
+  key是虚拟DOM对象的标识，当数据发生变化时，Vue会根据【新数据】生成【新的虚拟DOM】 
+
+  随后Vue进行【新虚拟DOM】与【旧虚拟DOM】的差异比较，比较规则如下：
+
+- diff算法对比规则：
+
+  (1)旧虚拟DOM中找到了与新虚拟DOM相同的key：
+
+  ​	①若虚拟DOM中内容没变, 直接使用之前的真实DOM
+
+  ​	②若虚拟DOM中内容变了, 则生成新的真实DOM，随后替换掉页面中之前的真实DOM
+
+  (2)旧虚拟DOM中未找到与新虚拟DOM相同的key
+
+  ​     创建新的真实DOM，随后渲染到到页面
+
+
+- 用index作为key可能会引发的问题：
+
+  ​	①若对数据进行：逆序添加、逆序删除等破坏顺序操作:
+
+  ​	会产生没有必要的真实DOM更新 ==> 界面效果没问题, 但效率低（因为要对后续的Dom重新新建）
+
+  ​	②如果结构中还包含输入类的DOM：
+
+  ​	会产生错误DOM更新 ==> 界面有问题
+
+- 开发中如何选择key?:
+
+  ①最好使用每条数据的唯一标识作为key, 比如id、手机号、身份证号、学号等唯一值
+
+  ②如果不存在对数据的逆序添加、逆序删除等破坏顺序操作，仅用于渲染列表用于展示，使用index作为key是没有问题的
+
+  ③不写key值时，Vue会把的索引值index自动作为key
+
+**示例-数组中添加一个老刘**
+
+添加的位置在数组的前面，会出现问题（索引为0，索引后移）；添加在数组的后面不会出现问题
+
+```vue
+  <div id="root">
+    <!-- 遍历数组 -->
+    <h2>人员列表（遍历数据）</h2>
+    <button @click.once="add">添加一个老刘</button>
+    <ul>
+      <li v-for="(p,index) in persons" :key="index">
+        {{p.name}}--{{p.age}}
+        <input type="text">
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        persons: [
+          { id: '001', name: '张三', age: 18 },
+          { id: '002', name: '李四', age: 19 },
+          { id: '003', name: '王五', age: 20 }
+        ],
+      },
+      methods: {
+        add() {
+          const p = { id: '004', name: '老刘', age: 40 }
+          this.persons.unshift(p)
+        }
+      },
+    })
+```
+
+**问题：**
+
+数据串行，老刘--40把张三--18顶下去了
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208091709385.png)
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208091709543.png)
+
+**解决方法：** 
+
+使用 p.id 作为key
+
+```vue
+  <div id="root">
+    <!-- 遍历数组 -->
+    <h2>人员列表（遍历数据）</h2>
+    <button @click.once="add">添加一个老刘</button>
+    <ul>
+      <li v-for="(p,index) in persons" :key="index">
+        {{p.name}}--{{p.age}}
+        <input type="text">
+      </li>
+    </ul>
+  </div>
+```
+
+**虚拟Dom的对比算法**
+
+**index作为key产生的问题**
+
+1.diff首先对比生成的两个虚拟DOM 张三-18 和 老刘-30，发现不同，打个X
+
+2.再对比两个input，发现相同打个X
+
+3.再用相同的方法把三行都对比后，开始生成新的真实DOM
+
+4.在这个新的真实DOM里，老刘-30是新的，但是input是沿用原来的，所以输入框内容包含“张三-18”
+
+5.生成最后一个王五-20的时候，生成的input是新的，所以输入框内容为空
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208091739123.png)
+
+**id作为key的作用**
+
+1.同样是对比两个虚拟DOM，但这一次有任何一个不同，内容都不会沿用
+
+2.对比第一行，老刘-30 和 张三-18不同，在创建新的DOM时，直接创建新的内容 即老刘-30 空白input
+
+3.对比其他行，都一样，所以都引用的原来的数据
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208091739081.png)
+
+### 列表过滤
+
+**watch方法过滤（少用）**
+
+```vue
+  <div id="root">
+    <!-- 遍历数组 -->
+    <h2>人员列表</h2>
+    <input type="text" placeholder="请输入名字" v-model="keyWord">
+    <ul>
+      <li v-for="(p,index) in filPersons" :key="p.id">
+        {{p.name}}-{{p.age}}-{{p.sex}}
+      </li>
+    </ul>
+  </div>
+  
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    // 用watch 实现
+    new Vue({
+      el: '#root',
+      data: {
+        keyWord: '',
+        persons: [
+          { id: '001', name: '马冬梅', age: 18, sex: '女' },
+          { id: '002', name: '周冬雨', age: 19, sex: '女' },
+          { id: '003', name: '周杰伦', age: 20, sex: '男' },
+          { id: '004', name: '温兆伦', age: 21, sex: '男' }
+        ],
+        filPersons: []
+      },
+      watch: {
+        keyWord: {
+          immediate: true, // 不等发生改变时就调用了一次（否则一开始没有数据）
+          handler(val) {
+            this.filPersons = this.persons.filter((p) => {
+              return p.name.indexOf(val) !== -1
+            })
+          }
+        }
+      }
+    })
+  </script>
+```
+
+**computed方法过滤（常用）**
+
+```vue
+  <div id="root">
+    <!-- 遍历数组 -->
+    <h2>人员列表</h2>
+    <input type="text" placeholder="请输入名字" v-model="keyWord">
+    <ul>
+      <li v-for="(p,index) in filPersons" :key="p.id">
+        {{p.name}}-{{p.age}}-{{p.sex}}
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    // 用 computed 实现
+    new Vue({
+      el: '#root',
+      data: {
+        keyWord: '',
+        persons: [
+          { id: '001', name: '马冬梅', age: 18, sex: '女' },
+          { id: '002', name: '周冬雨', age: 19, sex: '女' },
+          { id: '003', name: '周杰伦', age: 20, sex: '男' },
+          { id: '004', name: '温兆伦', age: 21, sex: '男' }
+        ],
+      },
+      computed: {
+        filPersons() {
+          return this.filPersons = this.persons.filter((p) => {
+            return p.name.indexOf(this.keyWord) !== -1
+          })
+        }
+      }
+    })
+  </script>
+```
+
+### 列表排序
+
+```vue
+  <div id="root">
+    <!-- 遍历数组 -->
+    <h2>人员列表</h2>
+    <input type="text" placeholder="请输入名字" v-model="keyWord">
+    <button @click="sortType = 1">年龄升序</button>
+    <button @click="sortType = 2">年龄降序</button>
+    <button @click="sortType = 0">原顺序</button>
+    <ul>
+      <li v-for="(p,index) in filPersons" :key="p.id">
+        {{p.name}}-{{p.age}}-{{p.sex}}
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    // 用 computed 实现
+    new Vue({
+      el: '#root',
+      data: {
+        keyWord: '',
+        sortType: 0, // 0 原顺序 1 降序 2 升序
+        persons: [
+          { id: '001', name: '马冬梅', age: 22, sex: '女' },
+          { id: '002', name: '周冬雨', age: 18, sex: '女' },
+          { id: '003', name: '周杰伦', age: 28, sex: '男' },
+          { id: '004', name: '温兆伦', age: 24, sex: '男' }
+        ],
+      },
+      computed: {
+        filPersons() {
+          const arr = this.filPersons = this.persons.filter((p) => {
+            return p.name.indexOf(this.keyWord) !== -1
+          })
+          // 判断是否需要排序
+          if (this.sortType) {
+            arr.sort((p1, p2) => {
+              return this.sortType === 1 ? p2.age - p1.age : p1.age - p2.age
+            })
+          }
+          return arr
+        }
+      }
+    })
+  </script>
+```
+
+## Vue检测数据改变的原理
+
+### 更新数据时遇到的一个问题
+
+**成功**
+
+```js
+methods: {
+        updateMei() {
+          this.persons[0].name = '马老师' // 奏效
+          this.persons[0].age = 50 // 奏效
+          this.persons[0].sex = '男' // 奏效
+        }
+      }
+```
+
+**失败 数据已经修改成功，但是Vue 没有发现数据的改变**
+
+```js
+methods: {
+        updateMei() {
+          this.persons[0] = { id: '001', name: '马老师', age: 50, sex: '男' }
+        }
+      }
+```
+
+**成功（后面解释原因）**
+
+```js
+methods: {
+	updateMei(){
+		this.persons.splice(0,1,{id:'001',name:'马老师',age:50,sex:'男'}) //奏效
+	}
+}		
+```
+
+### Vue监测数据改变的原理–对象
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208092302972.png)
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208092302974.png)
+
+**原理核心代码如下**
+相当于创建了一个function Observer(obj)，用这个方法为每一个对象赋setter和getter方法
+
+```js
+  <script>
+    let data = {
+      name: 'DouYing',
+      address: '浙江丽水'
+    }
+
+    // 创建一个监视的实例对象，用于监视 data 中属性的变化
+    const obs = new Observer(data)
+    console.log(obs)
+
+    // 准备一个 vm 实例对象
+    let vm = {}
+    vm._data = data = obs
+
+    function Observer(obj) {
+      // 汇总对象中所有的属性形成一个数组
+      const keys = Object.keys(obj)
+      // 遍历
+      keys.forEach((k) => {
+        Object.defineProperty(this, k, {
+          get() {
+            return obj[k]
+          },
+          set(val) {
+            console.log(`${k}被修改了，我要去解析模板，生成虚拟DOM`)
+            obj[k] = val
+          }
+        })
+      })
+    }
+  </script>
+```
+
+### Vue.set方法（Vue Api）
+
+- 管理者想添加 Vue 尚不完善的功能
+- 如：添加一个性别，当时性别有没有定义下来，随着用户的交互，代码的发现，需要性别
+
+**解决方式（两种方式）：**
+
+- Vue.set(target,key,val) 在Vue身上
+
+  ​	target 目标（往谁的身上添加属性）
+
+  ​	key 什么属性
+
+  ​	val 属性的值
+
+  ```js
+  Vue.set(vm._data.student,'sex','男')
+  ```
+
+- vm.$set(vm._data.student,‘sex’,‘男’) 在vm身上
+
+  ```js
+  vm.$set(vm._data.student,'sex','女')
+  ```
+
+上面两种方法 _data均可省略
+
+**局限性**
+
+- 只能对对象属性用set
+- 不能对Vue实例，或Vue实例的根数据对象用set，即不能直接往data里插一个新的数据
+  **添加一个功能点我给学生添加一个性别**
+
+```vue
+<div id="root">
+	<button @click="addSex">添加一个性别属性，默认值是男</button>
+	<h2>姓名：{{student.name}}</h2>
+	<h2 v-if="student.sex">性别：{{student.sex}}</h2>
+</div>
+
+<script type="text/javascript">
+Vue.config.productionTip = false //阻止 vue 在启动时生成生产提示。
+
+const vm = new Vue({
+	el:'#root',
+	data:{
+	},
+	methods: {
+		addSex(){
+			// Vue.set(this.student,'sex','男')  或者
+			this.$set(this.student,'sex','男')
+		}
+	}
+})
+</script>
+```
+
+### Vue监测数据改变的原理–数组
+
+```js
+data:{
+   	hobby:['抽烟','喝酒','烫头'],
+   	friends:[
+   		{name:'jerry',age:35},
+   		{name:'tony',age:36}
+   	]
+   }
+},
+```
+
+直接用下标修改会因为下图原因（因为数组保存的是个字符串，Vue不会对每个字符去设置一个getter和setter）
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208100009430.png)
+
+要修改数组要通过 Vue 默认修改数组的方法 (7个操作数组的方法)
+（注：这些方法是将Array中的同名方法进行封装，在里面插入setter和getter）
+
+- push 最后的位置新增一个元素
+
+- pop 删除最后一个元素
+
+- shift 删除第一个元素
+
+- unshift 最前面添加一个元素
+
+- splice 指定位置插入一个元素，或者删除一个元素，或者替换调一个元素
+
+- sort 数组排序
+
+- reverse 翻转数组
+
+- filter 不影响原数组，但是还想使用filter 怎么办？
+
+  ​	把过滤生成的新数组，替换掉原来的数组
+
+共同点：可以修改数组，引起数组的改变
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208100009429.png)
+
+### Vue数据监测总结
+
+Vue监视数据的原理：
+
+- vue会监视data中所有层次的数据
+
+- 如何监测对象中的数据
+
+  ​	通过setter实现监视，且要在new Vue时就传入要监测的数据
+
+  ​	(1).对象中后追加的属性，Vue默认不做响应式处理
+
+  ​	(2).如需给后添加的属性做响应式，请使用如下API：
+
+  ​	Vue.set(target，propertyName/index，value) 或 
+
+  ​	vm.$set(target，propertyName/index，value)
+
+- 如何监测数组中的数据？
+
+  ​	通过包裹数组更新元素的方法实现，本质就是做了两件事：
+
+  ​	(1).调用原生对应的方法对数组进行更新
+
+  ​	(2).重新解析模板，进而更新页面
+
+- 在Vue修改数组中的某个元素一定要用如下方法：
+
+  ​	1.使用这些API:push()、pop()、shift()、unshift()、splice()、sort()、reverse()
+
+  ​	2.Vue.set() 或 vm.$set()
+
+特别注意：Vue.set() 和 vm.$set() 不能给vm 或 vm的根数据对象 添加属性
+
+**综合案例**
+
+```vue
+  <div id="root">
+    <h1>学生信息</h1>
+
+    <button @click="student.age++">年龄+1岁</button> <br />
+    <button @click="addSex">添加性别属性，默认值：男</button> <br />
+    <button @click="student.sex = '未知' ">修改性别</button> <br />
+    <button @click="addFirend">在列表首位添加一个朋友</button> <br />
+    <button @click="updateFirstFirendName">修改第一个朋友的名字为：张三</button> <br />
+    <button @click="addHobby">添加一个爱好</button> <br />
+    <button @click="updateHobby">修改第一个爱好为：开车</button> <br />
+    <button @click="removeRap">过滤掉爱好中的Rap</button> <br />
+
+    <h3>姓名：{{student.name}}</h3>
+    <h3>年龄：{{student.age}}</h3>
+    <h3 v-if="student.sex">性别：{{student.sex}}</h3>
+    <h3>爱好：</h3>
+    <ul>
+      <li v-for="(h,index) in student.hobby" :key="index">
+        {{h}}
+      </li>
+    </ul>
+    <h3>朋友们：</h3>
+    <ul>
+      <li v-for="(f,index) in student.friends" :key="index">
+        {{f.name}}--{{f.age}}
+      </li>
+    </ul>
+  </div>
+</body>
+
+<script type="text/javascript">
+  Vue.config.productionTip = false //阻止 vue 在启动时生成生产提示。
+
+  const vm = new Vue({
+    el: '#root',
+    data: {
+      student: {
+        name: 'DouYing',
+        age: 20,
+        hobby: ['唱', '跳', 'Rap'],
+        friends: [
+          { name: 'jerry', age: 35 },
+          { name: 'tony', age: 36 }
+        ]
+      }
+    },
+    methods: {
+      addSex() {
+        // Vue.set(this.student, 'sex', '男')
+        this.$set(this.student, 'sex', '男')
+      },
+      addFirend() {
+        this.student.friends.unshift({ name: 'jack', age: 70 })
+      },
+      updateFirstFirendName() {
+        this.student.friends[0].name = '张三'
+      },
+      addHobby() {
+        this.student.hobby.push('ikun')
+      },
+      updateHobby() {
+        // this.student.hobby.splice(0, 1, '开车')
+        // Vue.set(this.student.hobby, 0, '开车')
+        this.$set(this.student.hobby, 0, '开车')
+      },
+      removeRap() {
+        this.student.hobby = this.student.hobby.filter((h) => {
+          return h !== 'Rap'
+        })
+      }
+    },
+  })
+</script>
+```
+
