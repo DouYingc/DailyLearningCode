@@ -5,14 +5,21 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>el与data的两种写法</title>
+  <title>v-pre指令</title>
   <!-- 引入 Vue -->
   <script src="../js/vue.js"></script>
 </head>
 
 <body>
-
+  <!-- 
+    v-pre指令：
+        1.跳过其所在节点的编译过程。
+        2.可利用它跳过：没有使用指令语法、没有使用插值语法的节点，会加快编译。
+  -->
   <div id="root">
+    <h1 v-pre>Vue其实很简单</h1>
+    <h2>当前的n值是：{{n}}</h2>
+    <button @click="n++">点我n+1</button>
   </div>
 
 </body>
@@ -23,7 +30,7 @@
   new Vue({
     el: '#root',
     data: {
-      name: 'DouYing'
+      n: '1'
     }
   })
 </script>
