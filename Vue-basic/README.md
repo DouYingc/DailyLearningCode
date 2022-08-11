@@ -2477,11 +2477,38 @@ Vue.directive('fbind',function(element,binding){
 
 ## Vue的生命周期
 
+Vue实例有一个完整的生命周期，也就是从开始创建初始化数据、编译模板、挂载DOM、渲染一更新一渲染、卸载等一系列过程，我们称这是Vue的生命周期。通俗说就是Vue实例从创建到销毁的过程，就是生命周期
+
+### 生命周期流程图
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111706995.png)
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111706994.png)
+
+### vue 生命周期
+
+- 初始化显示：
+
+  beforeCreate()
+
+  created()
+
+  beforeMount()
+
+  mounted() （常用）
 
 
+- 更新状态: this.xxx = value
 
+  beforeUpdate()
 
+  updated()
 
+- 销毁 vue 实例: vm.$destroyed()
+
+  beforeDestroy()（常用）
+
+  destroyed()
 
 ### 引出Vue的生命周期
 
@@ -2573,6 +2600,265 @@ Vue.directive('fbind',function(element,binding){
 			},16)
 		},
 	}) 
+</script>
+```
+
+### 分析Vue的生命周期
+
+#### 总体观察
+
+```vue
+  <div id="root">
+    <h1 v-text="n"></h1>
+    <h1>当前的n值是:{{n}}</h1>
+    <button @click="add">点我n+1</button>
+    <button @click="bye">点我销毁vm</button>
+  </div>
+
+</body>
+
+<script>
+  // 阻止 vue 在启动时生成生产提示
+  Vue.config.productionTip = false
+  new Vue({
+    el: '#root',
+    // template: `
+    //   <div>
+    //     <h1>当前的n值是:{{n}}</h1>
+    //     <button @click="add">点我n+1</button>
+    //   </div>
+    // `,
+    data: {
+      n: 1,
+    },
+    methods: {
+      add() {
+        this.n++
+      },
+      bye() {
+        console.log('bye')
+        this.$destroy()
+      }
+    },
+    watch: {
+      n() {
+        console.log('n变了')
+      }
+    },
+    beforeCreate() {
+      console.log('beforeCreate')
+    },
+    created() {
+      console.log('created')
+    },
+    beforeMount() {
+      console.log('beforeMount')
+    },
+    mounted() {
+      console.log('mounted')
+    },
+    beforeUpdate() {
+      console.log('beforeUpdate')
+    },
+    updated() {
+      console.log('updated')
+    },
+    beforeDestroy() {
+      console.log('beforeDestroy')
+    },
+    destroyed() {
+      console.log('destroyed')
+    },
+  })
+</script>
+```
+
+#### 逐个分析
+
+- **生命周期的创建**
+
+  **① beforeCreate**
+
+  在创建vue实例化之前，此时没有_data
+
+  ```js
+  beforeCreate() {
+     console.log('beforeCreate')
+     console.log(this)
+     debugger;
+  },
+  ```
+
+  ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111617746.png)
+
+  **② created**
+
+  ```js
+  created() {
+  	console.log('created')
+  	console.log(this)
+  	debugger;
+  },
+  ```
+
+  ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111617167.png)
+
+- **生命周期的挂载**
+
+  **③ beforeMount**
+
+  ```js
+  beforeMount() {
+     console.log('beforeMount')
+     console.log(this)
+     debugger;
+  },
+
+  ```
+
+  - 页面数据未被解析![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111617169.png)
+
+  - 对所有DOM的操作**最终**都没有用（因为在这个周期之前的el已经被解析好了，create那一步的绿色框会直接把之前解析好的el插到页面中）
+
+    ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111617170.png)
+
+  **④ mounted**
+
+  ```js
+  mounted() {
+  		console.log('mounted')
+  		console.log(this)
+  		document.querySelector('h2').innerText = "123"
+  	       // 验证 el 是不是真实Dom
+  	       console.log('mounted',this.$el)
+  	          console.log('mounted',this.$el instanceof HTMLElement)
+  		debugger;
+  },
+  ```
+
+  此时页面解析完成，且对DOM操作有效
+
+  ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111617171.png)
+
+  ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111617172.png)
+
+- **生命周期的更新**
+
+  数据发生更新就会调用这两个函数
+
+  **⑤ beforeUpdate**
+
+  ```js
+  beforeUpdate() {
+  	console.log('beforeUpdate')
+  	console.log(this.n)
+  	debugger;
+  },
+  ```
+
+  ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111645505.png)
+
+  **⑥ updated**
+
+  ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111645506.png)
+
+- **生命周期的销毁**
+
+  销毁不会销毁基于原生js的方法，即本例中的add()在销毁vm后仍可以使用
+
+  **⑦ beforeDestroy**
+
+  一般不会在beforeDestroy操作数据，因为即便操作数据，也不会再触发更新流程了
+
+  ```js
+  beforeDestroy() {
+  	console.log('beforeDestroy')
+  },
+  ```
+
+  ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111645507.png)
+
+  **⑧ destroyed**
+
+  ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111645508.png)
+
+### Vue生命周期的总结
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208111708219.png)
+
+**总结**
+
+**常用的生命周期钩子**
+
+1. mounted: 发送ajax请求、启动定时器、绑定自定义事件、订阅消息等【初始化操作】
+2. beforeDestroy: 清除定时器、解绑自定义事件、取消订阅消息等【收尾工作】
+
+**关于销毁Vue实例**
+
+1. 销毁后借助Vue开发者工具看不到任何信息
+2. 销毁后自定义事件会失效，但原生DOM事件依然有效
+3. 一般不会在beforeDestroy操作数据，因为即便操作数据，也不会再触发更新流程了
+
+**案例：设置按钮，停止透明度变化**
+
+```vue
+  <div id="root">
+    <h1 :style="{opacity}">欢迎学习Vue</h1>
+    <button @click="opacity = 1">透明度设置为1</button>
+    <button @click="stop">点我停止变化</button>
+  </div>
+
+</body>
+
+<script>
+  // 阻止 vue 在启动时生成生产提示
+  Vue.config.productionTip = false
+  new Vue({
+    el: '#root',
+    data: {
+      opacity: 1,
+    },
+    methods: {
+      stop() {
+        this.$destroy()
+      }
+    },
+    // Vue 完成模板的解析并把初始的真实的 DOM 元素放入页面后调用（挂载完毕） mounted
+    mounted() {
+      this.timer = setInterval(() => {
+        console.log('setInterval')
+        this.opacity -= 0.01
+        if (this.opacity <= 0) this.opacity = 1
+      }, 16)
+    },
+    beforeDestroy() {
+      console.log('vm即将驾鹤西游了')
+      clearInterval(this.timer)
+    },
+  })
+</script>
+```
+
+### 补充知识点 template
+
+```vue
+<div id="root" :x="n">
+</div>
+<script>
+new Vue({
+    el:'#root',
+    //用es6的模板字符串，在要解析的html代码外套上个div，则一整个div会替换掉上面那个带id的div
+    //注意：用这种方法解析的idv是不带:x="n"的
+    template:`
+        <div>
+            <h2>当前的n值是：{{n}}</h2>
+            <button @click="add">点我n+1</button>
+        </div>
+    `,
+    data:{
+        n:1
+    },
+})
 </script>
 ```
 
