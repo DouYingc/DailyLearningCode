@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "less-loader": "^11.0.0",
     "vue": "^2.6.14"
   },
   "devDependencies": {
@@ -39,5 +40,9 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "description": "- 引用导致依赖关系混乱，难以维护\r - html中的代码复用率不高",
+  "main": "babel.config.js",
+  "author": "",
+  "license": "ISC"
 }
