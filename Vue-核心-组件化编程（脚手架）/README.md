@@ -1580,3 +1580,1219 @@ App组件中一般不写scoped，因为会在App中书写的样式，就是想�
 </style>
 ```
 
+## Todo-list案例
+
+### 静态页面
+
+**app.vue**
+
+**注：** MyItem.vue不直接在app.vue中引入，而在MyList.vue中引入
+
+```vue
+<template>
+  <div id="root">
+    <div class="todo-container">
+      <div class="todo-wrap">
+        <MyHeader />
+        <MyList />
+        <MyFooter />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import MyHeader from './components/MyHeader.vue'
+  import MyList from './components/MyList.vue'
+  import MyFooter from './components/MyFooter.vue'
+
+  export default {
+    name: 'App',
+    components: { MyHeader, MyList, MyFooter }
+  }
+</script>
+
+<style>
+  /*base*/
+  body {
+    background: #fff;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 1px 2px rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+  }
+
+  .btn-danger {
+    color: #fff;
+    background-color: #da4f49;
+    border: 1px solid #bd362f;
+  }
+
+  .btn-danger:hover {
+    color: #fff;
+    background-color: #bd362f;
+  }
+
+  .btn:focus {
+    outline: none;
+  }
+
+  .todo-container {
+    width: 600px;
+    margin: 0 auto;
+  }
+  .todo-container .todo-wrap {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+</style>
+```
+
+**MyHeader.vue**
+
+```vue
+<template>
+  <div class="todo-header">
+    <input type="text" placeholder="请输入你的任务名称，按回车键确认" />
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'MyHeader'
+  }
+</script>
+
+<style scoped>
+  /*header*/
+  .todo-header input {
+    width: 560px;
+    height: 28px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px 7px;
+  }
+
+  .todo-header input:focus {
+    outline: none;
+    border-color: rgba(82, 168, 236, 0.8);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+      0 0 8px rgba(82, 168, 236, 0.6);
+  }
+</style>
+```
+
+**MyList.vue**
+
+```vue
+<template>
+  <ul class="todo-main">
+    <MyItem />
+    <MyItem />
+    <MyItem />
+    <MyItem />
+  </ul>
+</template>
+
+<script>
+  import MyItem from '../components/MyItem.vue'
+  export default {
+    name: 'MyList',
+    components: { MyItem }
+  }
+</script>
+
+<style scoped>
+  /*main*/
+  .todo-main {
+    margin-left: 0px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 0px;
+  }
+
+  .todo-empty {
+    height: 40px;
+    line-height: 40px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding-left: 5px;
+    margin-top: 10px;
+  }
+</style>
+```
+
+**MyItem.vue**
+
+```vue
+<template>
+  <li>
+    <label>
+      <input type="checkbox" />
+      <span>xxxxx</span>
+    </label>
+    <button class="btn btn-danger" style="display:none">删除</button>
+  </li>
+</template>
+
+<script>
+  export default {
+    name: 'MyItem'
+  }
+</script>
+
+<style scoped>
+  /*item*/
+  li {
+    list-style: none;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 5px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  li label {
+    float: left;
+    cursor: pointer;
+  }
+
+  li label li input {
+    vertical-align: middle;
+    margin-right: 6px;
+    position: relative;
+    top: -1px;
+  }
+
+  li button {
+    float: right;
+    display: none;
+    margin-top: 3px;
+  }
+
+  li:before {
+    content: initial;
+  }
+
+  li:last-child {
+    border-bottom: none;
+  }
+</style>
+```
+
+**MyFooter.vue**
+
+```vue
+<template>
+  <div class="todo-footer">
+    <label>
+      <input type="checkbox" />
+    </label>
+    <span>
+      <span>已完成0</span> / 全部2
+    </span>
+    <button class="btn btn-danger">清除已完成任务</button>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'MyFooter'
+  }
+</script>
+
+<style scoped>
+  /*footer*/
+  .todo-footer {
+    height: 40px;
+    line-height: 40px;
+    padding-left: 6px;
+    margin-top: 5px;
+  }
+
+  .todo-footer label {
+    display: inline-block;
+    margin-right: 20px;
+    cursor: pointer;
+  }
+
+  .todo-footer label input {
+    position: relative;
+    top: -1px;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+
+  .todo-footer button {
+    float: right;
+    margin-top: 5px;
+  }
+</style>
+```
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208131635396.png)
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208131635431.png)
+
+### 展示动态的数据
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208131637210.png)
+
+**数据的类型、名称是什么**
+
+一堆要做的事情是一个数组，一个个要做的事情是对象，对象里面的内容=={id，name，done(标识，完成)}
+
+**数据保存在哪个组件**
+
+List组件展示就将数据保存在List中
+
+**MyList.vue**
+
+- 根据数据决定使用多少次 MyItem
+- 把每一条的具体信息对象传递给 MyItem
+
+```vue
+<template>
+  <ul class="todo-main">
+    <MyItem v-for="todoObj in todos" :key="todoObj.id" :todo="todoObj" />
+  </ul>
+</template>
+
+<script>
+  import MyItem from '../components/MyItem.vue'
+  export default {
+    name: 'MyList',
+    components: { MyItem },
+    data() {
+      return {
+        todos: [
+          { id: '001', title: '唱', done: true },
+          { id: '002', title: '跳', done: false },
+          { id: '003', title: 'Rap', done: true }
+        ]
+      }
+    }
+  }
+</script>
+```
+
+**MyItem.vue**
+
+- 接收
+- 动态决定是否勾选
+
+```vue
+<template>
+  <li>
+    <label>
+      <input type="checkbox" :checked="todo.done" />
+      <span>{{todo.title}}</span>
+    </label>
+    <button class="btn btn-danger" style="display:none">删除</button>
+  </li>
+</template>
+
+<script>
+  export default {
+    name: 'MyItem',
+    // 声明接收 todo 对象
+    props: ['todo']
+  }
+</script>
+```
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208131649145.png)
+
+### 交互
+
+组件之间的通信（兄弟、子传父、爷传孙），后面有更好的方式实现
+
+#### 添加
+
+**MyHeader.vue**
+
+- 绑定个键盘事件
+
+- 把用户的输入打印
+
+- 获取用户的输入
+
+  - 方式一：event 事件对象
+
+    ```js
+    add(event){
+       consloe.log(event.target.value) // 获得发生事件对象的元素
+    }
+    ```
+
+  - 方式二：v-model
+
+    ```js
+    <input type="text" placeholder="请输入你的任务名称，按回车键确认" v-model='title' @keyup.enter="add"/>
+
+    	data() {
+            return {
+                title:''
+            }
+        }
+    	menthod: {
+            add(event){
+        		consloe.log(this.target) // 获得发生事件对象的元素
+            }
+        }
+    ```
+
+- 把获取到的数据包装成一个todo对象 id使用uuid 的压缩版本 nanoid （单机版本） `npm i nanoid`
+
+- 把对象放到数组的前民（unshift），在List组件中保存数据的todos ，在Header组件输出
+
+- 两个兄弟组件之间直接进行数据传递——暂时实现不了
+
+- 原始间接传递
+
+  - 把List中的todos[] 给 App，让App通过 props 方式传递给list
+  - 让Header 把todoObj 给App
+
+  ![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208131723254.png)
+
+**具体案例实现：**
+
+- 在App里定义一个addTodo方法，通过父传子的形式传给MyHeader
+- MyHeader调用了addTodo方法，并对App.vue在data.todos中添加一个todo
+- App.vue向MyList中传todos，即可达到插入新的事件的效果
+
+**App.vue**
+
+```vue
+<template>
+  <div id="root">
+    <div class="todo-container">
+      <div class="todo-wrap">
+        <MyHeader :addTodo="addTodo" />
+        <MyList :todos="todos" />
+        <MyFooter />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import MyHeader from './components/MyHeader.vue'
+  import MyList from './components/MyList.vue'
+  import MyFooter from './components/MyFooter.vue'
+
+  export default {
+    name: 'App',
+    components: { MyHeader, MyList, MyFooter },
+    data() {
+      return {
+        todos: [
+          { id: '001', title: '唱', done: true },
+          { id: '002', title: '跳', done: false },
+          { id: '003', title: 'Rap', done: true }
+        ]
+      }
+    },
+    methods: {
+      addTodo(todoObj) {
+        this.todos.unshift(todoObj)
+      }
+    }
+  }
+</script>
+```
+
+**MyHeader.vue**
+
+```vue
+<template>
+  <div class="todo-header">
+    <input type="text" placeholder="请输入你的任务名称，按回车键确认" v-model="title" @keyup.enter="add" />
+  </div>
+</template>
+
+<script>
+  // 引入 nanoid，因为 noanoid 是分别暴露，所以这样引入
+  import { nanoid } from 'nanoid'
+  export default {
+    name: 'MyHeader',
+    props: ['addTodo'],
+    data() {
+      return {
+        title: ''
+      }
+    },
+    methods: {
+      add() {
+        // 校验数据
+        if (!this.title.trim()) return alert('输入不能为空')
+        // 将用户的输入包装成为一个 todo 对象
+        const todoObj = { id: nanoid(), title: this.title, done: false }
+        // 通知 App 组件去添加一个 todo 对象
+        this.addTodo(todoObj)
+        // 清空输入
+        this.title = ''
+      }
+    }
+  }
+</script>
+```
+
+**MyList.vue**
+
+```vue
+<template>
+  <ul class="todo-main">
+    <MyItem v-for="todoObj in todos" :key="todoObj.id" :todo="todoObj" />
+  </ul>
+</template>
+
+<script>
+  import MyItem from '../components/MyItem.vue'
+  export default {
+    name: 'MyList',
+    components: { MyItem },
+    props: ['todos']
+  }
+</script>
+```
+
+#### 勾选
+
+**MyItem.vue**
+
+- 拿到勾选的id，去todos中找到具体的某个人的 done 属性取反
+- todos数据在App (数据在哪里操作数据的方法就在哪里)
+
+```vue
+<template>
+  <li>
+    <label>
+      <input type="checkbox" :checked="todo.done" @change="handleCheck(todo.id)" />
+      <!-- 如下代码也能实现功能，但是不太推荐，因为有点违反原则，因为修改了props ，v-model 绑定的是传递过来的数据 props 不建议 -->
+      <!-- <input type="checkbox" v-model="todo.done" /> -->
+      <span>{{todo.title}}</span>
+    </label>
+    <button class="btn btn-danger" style="display:none">删除</button>
+  </li>
+</template> 
+
+<script>
+  export default {
+    name: 'MyItem',
+    // 声明接收 todo 对象
+    props: ['todo', 'checkTodo'],
+    methods: {
+      handleCheck(id) {
+        // 通知 App 组件将对应的 todo 对象的 done 值取反
+        this.checkTodo(id)
+      }
+    }
+  }
+</script>
+```
+
+**App.vue**
+
+```vue
+<template>
+  <div id="root">
+    <div class="todo-container">
+      <div class="todo-wrap">
+        <MyHeader :addTodo="addTodo" />
+        <MyList :todos="todos" :checkTodo="checkTodo" />
+        <MyFooter />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import MyHeader from './components/MyHeader.vue'
+  import MyList from './components/MyList.vue'
+  import MyFooter from './components/MyFooter.vue'
+
+  export default {
+    name: 'App',
+    components: { MyHeader, MyList, MyFooter },
+    data() {
+      return {
+        todos: [
+          { id: '001', title: '唱', done: true },
+          { id: '002', title: '跳', done: false },
+          { id: '003', title: 'Rap', done: true }
+        ]
+      }
+    },
+    methods: {
+      // 添加一个 todo
+      addTodo(todoObj) {
+        this.todos.unshift(todoObj)
+      },
+      // 勾选 or 取消勾选一个 todo
+      checkTodo(id) {
+        this.todos.forEach((todo) => {
+          if (todo.id === id) todo.done = !todo.done
+        })
+      }
+    }
+  }
+</script>
+```
+
+**MyList.vue**
+
+```vue
+<template>
+  <ul class="todo-main">
+    <MyItem v-for="todoObj in todos" :key="todoObj.id" :todo="todoObj" :checkTodo="checkTodo" />
+  </ul>
+</template>
+
+<script>
+  import MyItem from '../components/MyItem.vue'
+  export default {
+    name: 'MyList',
+    components: { MyItem },
+    props: ['todos', 'checkTodo']
+  }
+</script>
+```
+
+#### 删除
+
+- 鼠标悬浮有高亮效果，并出现删除按钮
+- 获取id，根据id删除
+
+**MyItem.vue** 
+
+通知app删除对应项 同样是 爷 传 孙
+
+```vue
+<template>
+  <li>
+    <label>
+      <input type="checkbox" :checked="todo.done" @change="handleCheck(todo.id)" />
+      <!-- 如下代码也能实现功能，但是不太推荐，因为有点违反原则，因为修改了props ，v-model 绑定的是传递过来的数据 props 不建议 -->
+      <!-- <input type="checkbox" v-model="todo.done" /> -->
+      <span>{{todo.title}}</span>
+    </label>
+    <button class="btn btn-danger" @click="handleDelete(todo.id)">删除</button>
+  </li>
+</template> 
+
+<script>
+  export default {
+    name: 'MyItem',
+    // 声明接收 todo 对象
+    props: ['todo', 'checkTodo', 'deleteTodo'],
+    methods: {
+      // 勾选 or  取消勾选
+      handleCheck(id) {
+        // 通知 App 组件将对应的 todo 对象的 done 值取反
+        this.checkTodo(id)
+      },
+      //删除
+      handleDelete(id) {
+        if (confirm('确定删除吗？')) {
+          // 通知 App 组件
+          this.deleteTodo(id)
+        }
+      }
+    }
+  }
+</script>
+```
+
+**App.vue 传 list**
+
+```vue
+<template>
+  <div id="root">
+    <div class="todo-container">
+      <div class="todo-wrap">
+        <MyHeader :addTodo="addTodo" />
+        <MyList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo" />
+        <MyFooter />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import MyHeader from './components/MyHeader.vue'
+  import MyList from './components/MyList.vue'
+  import MyFooter from './components/MyFooter.vue'
+
+  export default {
+    name: 'App',
+    components: { MyHeader, MyList, MyFooter },
+    data() {
+      return {
+        todos: [
+          { id: '001', title: '唱', done: true },
+          { id: '002', title: '跳', done: false },
+          { id: '003', title: 'Rap', done: true }
+        ]
+      }
+    },
+    methods: {
+      // 添加一个 todo
+      addTodo(todoObj) {
+        this.todos.unshift(todoObj)
+      },
+      // 勾选 or 取消勾选一个 todo
+      checkTodo(id) {
+        this.todos.forEach((todo) => {
+          if (todo.id === id) todo.done = !todo.done
+        })
+      },
+      // 删除一个 todo
+      deleteTodo(id) {
+        // filter 不改变原数组
+        this.todos = this.todos.filter(todo => todo.id !== id)
+      }
+    }
+  }
+</script>
+```
+
+**list 接收**
+
+```vue
+<template>
+  <ul class="todo-main">
+    <MyItem
+      v-for="todoObj in todos"
+      :key="todoObj.id"
+      :todo="todoObj"
+      :checkTodo="checkTodo"
+      :deleteTodo="deleteTodo"
+    />
+  </ul>
+</template>
+
+<script>
+  import MyItem from '../components/MyItem.vue'
+  export default {
+    name: 'MyList',
+    components: { MyItem },
+    props: ['todos', 'checkTodo', 'deleteTodo']
+  }
+</script>
+```
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208132023146.png)
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208132023577.png)
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208132023578.png)
+
+#### 底部统计
+
+- 统计全部和已完成 MyFooter –> todos 数组的长度 done 为真的数量
+
+**App.vue 给 footer 传递todos数组**
+
+```vue
+<MyFooter :todos="todos" />
+```
+
+**MyFooter.vue 声明接收**
+
+```vue
+<template>
+  <div class="todo-footer">
+    <label>
+      <input type="checkbox" />
+    </label>
+    <span>
+      <span>已完成{{doneTotal}}</span>
+      / 全部{{todos.length}}
+    </span>
+    <button class="btn btn-danger">清除已完成任务</button>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'MyFooter',
+    props: ['todos'],
+    computed: {
+      doneTotal() {
+        /* const x = this.todos.reduce((pre, current) => {
+          console.log('@', pre, current)
+          return pre + (current.done ? 1 : 0)
+        }, 0) */
+        return this.todos.reduce((pre, todo) => pre + (todo.done ? 1 : 0), 0)
+      }
+    }
+  }
+</script>
+```
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208132036634.png)
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208132036635.png)
+
+#### 底部交互
+
+- 全选 / 全不选，取决于 已完成 和 全部 是否相等
+- 如果没有数据时，不应该勾选，且不应该展示下面整个框
+
+**MyFooter.vue 已完成 / 完成数量的动态变化**
+
+**MyFooter.vue**
+
+```vue
+//1.复杂写法
+//<input type="checkbox" :checked="doneTotal === tatal"/>
+
+//2.vue简便写法
+//total = 0即没有添加事件时，该模块不显示
+<div v-show="total">
+	<input type="checkbox" :checked="isAll" @change="checkAll"/>
+</div>
+<script>
+export default {
+		name:'MyFooter',
+		props:['todos','checkAllTodo','clearAllTodo'],
+		computed: {
+			//总数
+			total(){
+				return this.todos.length
+			},
+			//已完成数
+			doneTotal(){
+				return this.todos.reduce((pre,todo)=> pre + (todo.done ? 1 : 0) ,0)
+			},
+			
+			// 简写方式，没有setter 方法  只能被读取不能被修改才可以  后面需要修改
+			//控制全选框
+			// 一个计算属性可以通过其他的计算属性 在进行计算 
+			isAll(){ 
+				//已完成事件等于全部事件 且 全部事件大于0  才返回真
+				return this.doneTotal === this.total && this.total > 0
+			}
+		},
+	}
+</script>
+
+```
+
+**MyFooter.vue 全选 和 局部选 的动态绑定**
+
+- this.checkAllTodo(e.target.checked) // true false 全选 或者 全不选
+- 告诉存储 todos 的人全选全不选
+
+**MyFooter.vue**
+
+```vue
+<template>
+  <div class="todo-footer" v-show="total">
+    <label>
+      <!-- <input type="checkbox" :checked="isAll" @change="checkAll" /> -->
+      <input type="checkbox" v-model="isAll" />
+    </label>
+    <span>
+      <span>已完成{{doneTotal}}</span>
+      / 全部{{total}}
+    </span>
+    <button class="btn btn-danger">清除已完成任务</button>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'MyFooter',
+    props: ['todos', 'checkAllTodo'],
+    computed: {
+      total() {
+        return this.todos.length
+      },
+      doneTotal() {
+        /* const x = this.todos.reduce((pre, current) => {
+          console.log('@', pre, current)
+          return pre + (current.done ? 1 : 0)
+        }, 0) */
+        return this.todos.reduce((pre, todo) => pre + (todo.done ? 1 : 0), 0)
+      },
+      // 简写方式，没有setter 方法  只能被读取不能被修改才可以  后面需要修改
+      //控制全选框
+      // 一个计算属性可以通过其他的计算属性 在进行计算 
+      /* isAll() {
+        //已完成事件等于全部事件 且 全部事件大于0  才返回真
+        return this.doneTotal === this.total && this.total > 0
+      } */
+      isAll: {
+        get() {
+          return this.doneTotal === this.total && this.total > 0
+        },
+        set(value) {
+          this.checkAllTodo(value)
+        }
+      }
+    },
+    methods: {
+      /* checkAll(e) {
+        this.checkAllTodo(e.target.checked)
+      } */
+    }
+  }
+</script>
+```
+
+**App.vue**
+
+```js
+<MyFooter :todos="todos" :checkAllTodo="checkAllTodo" />
+methods: {
+	//全选or取消全选
+	//这个done就是全选框的true或false
+	checkAllTodo(done){
+		//遍历每一个小框，将小框的true或false和全选框的选择状态同步
+		this.todos.forEach((todo)=>{
+			todo.done = done
+		})
+	},
+}
+```
+
+#### 批量删除已完成事件
+
+**MyFooter.vue**
+
+```vue
+<template>
+  <div class="todo-footer" v-show="total">
+    <label>
+      <!-- <input type="checkbox" :checked="isAll" @change="checkAll" /> -->
+      <input type="checkbox" v-model="isAll" />
+    </label>
+    <span>
+      <span>已完成{{doneTotal}}</span>
+      / 全部{{total}}
+    </span>
+    <button class="btn btn-danger" @click="clearAll">清除已完成任务</button>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'MyFooter',
+    props: ['todos', 'checkAllTodo', 'clearAllTodo'],
+    computed: {
+      total() {
+        return this.todos.length
+      },
+      doneTotal() {
+        /* const x = this.todos.reduce((pre, current) => {
+          console.log('@', pre, current)
+          return pre + (current.done ? 1 : 0)
+        }, 0) */
+        return this.todos.reduce((pre, todo) => pre + (todo.done ? 1 : 0), 0)
+      },
+      // 简写方式，没有setter 方法  只能被读取不能被修改才可以  后面需要修改
+      //控制全选框
+      // 一个计算属性可以通过其他的计算属性 在进行计算 
+      /* isAll() {
+        //已完成事件等于全部事件 且 全部事件大于0  才返回真
+        return this.doneTotal === this.total && this.total > 0
+      } */
+      isAll: {
+        get() {
+          return this.doneTotal === this.total && this.total > 0
+        },
+        set(value) {
+          this.checkAllTodo(value)
+        }
+      }
+    },
+    methods: {
+      /* checkAll(e) {
+        this.checkAllTodo(e.target.checked)
+      } */
+      clearAll() {
+        this.clearAllTodo()
+      }
+    }
+  }
+</script>
+```
+
+**App.vue**
+
+```js
+// 清除所有已经完成的 todo
+      clearAllTodo() {
+        this.todos = this.todos.filter(todo => !todo.done)
+      }
+```
+
+### todoList案例总结
+
+- 组件化编码流程：
+
+  (1).拆分静态组件：组件要按照功能点拆分，命名不要与html元素冲突
+
+  (2).实现动态组件：考虑好数据的存放位置，数据是一个组件在用，还是一些组件在用：
+
+  -  一个组件在用：放在组件自身即可
+
+
+  -  一些组件在用：放在他们共同的父组件上（状态提升）
+
+​	(3).实现交互：从绑定事件开始
+
+- props适用于：
+
+​	(1).父组件 ==> 子组件 通信
+
+​	(2).子组件 ==> 父组件 通信（要求父先给子一个函数）
+
+- 使用v-model时要切记：v-model绑定的值不能是props传过来的值，因为props是不可以修改的
+- props传过来的若是对象类型的值，修改对象中的属性时Vue不会报错，但不推荐这样做
+
+### TodoList本地监视
+
+**使用监视switch，监视数据todos的变化，变化后拿最新的数据存储**
+
+- 第一次使用时,没有数据，JSON.parse 读取为空会报错，应该给一个空数组
+
+- 有勾选，监视的是todos下的done属性，所以应该是深度监视
+
+  完整版 deep:true
+
+**app.vue**
+
+```vue
+<template>
+  <div id="root">
+    <div class="todo-container">
+      <div class="todo-wrap">
+        <MyHeader :addTodo="addTodo" />
+        <MyList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo" />
+        <MyFooter :todos="todos" :checkAllTodo="checkAllTodo" :clearAllTodo="clearAllTodo" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import MyHeader from './components/MyHeader.vue'
+  import MyList from './components/MyList.vue'
+  import MyFooter from './components/MyFooter.vue'
+
+  export default {
+    name: 'App',
+    components: { MyHeader, MyList, MyFooter },
+    data() {
+      return {
+        todos: JSON.parse(localStorage.getItem('todos')) || []
+      }
+    },
+    methods: {
+      // 添加一个 todo
+      addTodo(todoObj) {
+        this.todos.unshift(todoObj)
+      },
+      // 勾选 or 取消勾选一个 todo
+      checkTodo(id) {
+        this.todos.forEach((todo) => {
+          if (todo.id === id) todo.done = !todo.done
+        })
+      },
+      // 删除一个 todo
+      deleteTodo(id) {
+        // filter 不改变原数组
+        this.todos = this.todos.filter(todo => todo.id !== id)
+      },
+      // 全选 or 取消全选
+      checkAllTodo(done) {
+        this.todos.forEach(todo => todo.done = done)
+      },
+      // 清除所有已经完成的 todo
+      clearAllTodo() {
+        this.todos = this.todos.filter(todo => !todo.done)
+      }
+    },
+    watch: {
+      todos: {
+        deep: true,
+        handler(value) {
+          localStorage.setItem('todos', JSON.stringify(value))
+        }
+      }
+    }
+  }
+</script>
+```
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208132307554.png)
+
+## 浏览器本地存储
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208132251134.png)
+
+### localStorage
+
+- 读的结果不存在时是 null
+- 浏览器关闭，数据不会消失
+- 数据什么时候会消失
+  - 引导了用户点击了删除按钮
+  - 用户主动地清空缓存
+
+**LocalStorage的常用API**
+
+```js
+// 保存数据到 localStorage
+localStorage.setItem('key', 'value');
+//只能保存字符串形式，json对象需先转成json字符串
+let p = {name:'张三',age:18}
+localStorage.setItem('person',JSON.stringify(p))
+
+// 从 localStorage 获取数据
+let data = localStorage.getItem('key');
+
+// 从 localStorage 删除保存的数据
+localStorage.removeItem('key');
+
+// 从 localStorage 删除所有保存的数据
+localStorage.clear();
+
+// 获取某个索引的Key
+localStorage.key(index)
+```
+
+**具体使用**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>localStorage</title>
+</head>
+
+<body>
+  <h2>localStorage</h2>
+  <button onclick="saveData()">点我保存一个数据</button>
+  <button onclick="readData()">点我读取一个数据</button>
+  <button onclick="deleteData()">点我删除一个数据</button>
+  <button onclick="deleteAllData()">点我清空数据</button>
+</body>
+<script>
+  let p = { name: '张三', age: 18 }
+
+  function saveData() {
+    localStorage.setItem('msg', 'hello!')
+    localStorage.setItem('msg2', 666)
+    localStorage.setItem('person', JSON.stringify(p))
+  }
+  function readData() {
+    console.log(localStorage.getItem('msg2'))
+    console.log(localStorage.getItem('msg'))
+
+    const result = localStorage.getItem('person')
+    console.log(JSON.parse(result))
+
+    // console.log(localStorage.getItem('msg3'))
+  }
+  function deleteData() {
+    localStorage.removeItem('msg2')
+  }
+  function deleteAllData() {
+    localStorage.clear()
+  }
+</script>
+
+</html>
+```
+
+### SessionStorage
+
+**SessionStorage** 主要用于临时保存同一窗口(或标签页)的数据，刷新页面时不会删除，关闭窗口或标签页之后将会删除这些数据
+**SessionStorage的常用API：**
+
+```js
+// 保存数据到 sessionStorage
+sessionStorage.setItem('key', 'value');
+//只能保存字符串形式，json对象需先转成json字符串
+let p = {name:'张三',age:18}
+sessionStorage.setItem('person',JSON.stringify(p))
+
+// 从 sessionStorage 获取数据
+let data = sessionStorage.getItem('key');
+
+// 从 sessionStorage 删除保存的数据
+sessionStorage.removeItem('key');
+
+// 从 sessionStorage 删除所有保存的数据
+sessionStorage.clear();
+
+// 获取某个索引的Key
+sessionStorage.key(index)
+```
+
+**具体使用**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sessionStorage</title>
+</head>
+
+<body>
+  <h2>sessionStorage</h2>
+  <button onclick="saveData()">点我保存一个数据</button>
+  <button onclick="readData()">点我读取一个数据</button>
+  <button onclick="deleteData()">点我删除一个数据</button>
+  <button onclick="deleteAllData()">点我清空数据</button>
+</body>
+<script>
+  let p = { name: '张三', age: 18 }
+
+  function saveData() {
+    sessionStorage.setItem('msg', 'hello!')
+    sessionStorage.setItem('msg2', 666)
+    sessionStorage.setItem('person', JSON.stringify(p))
+  }
+  function readData() {
+    console.log(sessionStorage.getItem('msg2'))
+    console.log(sessionStorage.getItem('msg'))
+
+    const result = sessionStorage.getItem('person')
+    console.log(JSON.parse(result))
+
+    // console.log(sessionStorage.getItem('msg3'))
+  }
+  function deleteData() {
+    sessionStorage.removeItem('msg2')
+  }
+  function deleteAllData() {
+    sessionStorage.clear()
+  }
+</script>
+
+</html>
+```
+

@@ -20,7 +20,11 @@
     components: { MyHeader, MyList, MyFooter },
     data() {
       return {
-        todos: JSON.parse(localStorage.getItem('todos')) || []
+        todos: [
+          { id: '001', title: '唱', done: true },
+          { id: '002', title: '跳', done: false },
+          { id: '003', title: 'Rap', done: true }
+        ]
       }
     },
     methods: {
@@ -46,14 +50,6 @@
       // 清除所有已经完成的 todo
       clearAllTodo() {
         this.todos = this.todos.filter(todo => !todo.done)
-      }
-    },
-    watch: {
-      todos: {
-        deep: true,
-        handler(value) {
-          localStorage.setItem('todos', JSON.stringify(value))
-        }
       }
     }
   }
