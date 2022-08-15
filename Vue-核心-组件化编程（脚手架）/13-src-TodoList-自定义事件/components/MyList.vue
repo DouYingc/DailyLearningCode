@@ -1,6 +1,12 @@
 <template>
   <ul class="todo-main">
-    <MyItem v-for="todoObj in todos" :key="todoObj.id" :todo="todoObj" />
+    <MyItem
+      v-for="todoObj in todos"
+      :key="todoObj.id"
+      :todo="todoObj"
+      :checkTodo="checkTodo"
+      :deleteTodo="deleteTodo"
+    />
   </ul>
 </template>
 
@@ -9,8 +15,7 @@
   export default {
     name: 'MyList',
     components: { MyItem },
-    // 声明接收 App 传递过来的数据
-    props: ['todos',]
+    props: ['todos', 'checkTodo', 'deleteTodo']
   }
 </script>
 

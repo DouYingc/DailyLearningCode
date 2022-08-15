@@ -2,16 +2,15 @@
   <div id="root">
     <div class="todo-container">
       <div class="todo-wrap">
-        <MyHeader @addTodo="addTodo" />
-        <MyList :todos="todos" />
-        <MyFooter :todos="todos" @checkAllTodo="checkAllTodo" @clearAllTodo="clearAllTodo" />
+        <MyHeader :addTodo="addTodo" />
+        <MyList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo" />
+        <MyFooter :todos="todos" :checkAllTodo="checkAllTodo" :clearAllTodo="clearAllTodo" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import pubsub from 'pubsub-js'
   import MyHeader from './components/MyHeader.vue'
   import MyList from './components/MyList.vue'
   import MyFooter from './components/MyFooter.vue'
@@ -36,7 +35,7 @@
         })
       },
       // 删除一个 todo
-      deleteTodo(_, id) {
+      deleteTodo(id) {
         // filter 不改变原数组
         this.todos = this.todos.filter(todo => todo.id !== id)
       },
@@ -47,12 +46,6 @@
       // 清除所有已经完成的 todo
       clearAllTodo() {
         this.todos = this.todos.filter(todo => !todo.done)
-      },
-      // 更新一个 todo
-      updateTodo(id, title) {
-        this.todos.forEach((todo) => {
-          if (todo.id === id) todo.title = title
-        })
       }
     },
     watch: {
@@ -62,16 +55,6 @@
           localStorage.setItem('todos', JSON.stringify(value))
         }
       }
-    },
-    mounted() {
-      this.$bus.$on('checkTodo', this.checkTodo)
-      this.$bus.$on('updateTodo', this.updateTodo)
-      this.pubuId = pubsub.subscribe('deleteTodo', this.deleteTodo)
-    },
-    beforeDestroy() {
-      this.$bus.$off('checkTodo')
-      this.$bus.$off('updateTodo')
-      pubsub.unsubscribe(this.pubuId)
     }
   }
 </script>
@@ -100,12 +83,6 @@
     color: #fff;
     background-color: #da4f49;
     border: 1px solid #bd362f;
-  }
-  .btn-edit {
-    color: #fff;
-    background-color: skyblue;
-    border: 1px solid rgb(98, 151, 172);
-    margin-right: 5px;
   }
 
   .btn-danger:hover {

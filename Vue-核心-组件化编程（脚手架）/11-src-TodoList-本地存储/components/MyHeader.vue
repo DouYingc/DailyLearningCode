@@ -9,9 +9,9 @@
   import { nanoid } from 'nanoid'
   export default {
     name: 'MyHeader',
+    props: ['addTodo'],
     data() {
       return {
-        // 收集用户输入的 title
         title: ''
       }
     },
@@ -22,7 +22,7 @@
         // 将用户的输入包装成为一个 todo 对象
         const todoObj = { id: nanoid(), title: this.title, done: false }
         // 通知 App 组件去添加一个 todo 对象
-        this.$emit('addTodo', todoObj)
+        this.addTodo(todoObj)
         // 清空输入
         this.title = ''
       }
