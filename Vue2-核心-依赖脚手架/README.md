@@ -6708,3 +6708,497 @@ this.$router.replace({
 
 ### 两个新的生命周期钩子
 
+作用：路由组件所独有的两个钩子，用于捕获路由组件的激活状态
+具体名字：
+
+- `activated`路由组件被激活时触发
+- `deactivated`路由组件失活时触发
+
+> 这两个生命周期钩子需要配合前面的缓存路由组件使用（没有缓存路由组件不起效果）
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208252026541.png)
+
+**News.vue**
+
+```vue
+<template>
+  <ul>
+    <li :style="{opacity}">欢迎学习Vue</li>
+    <li>
+      news001
+      <input type="text" />
+    </li>
+    <li>
+      news002
+      <input type="text" />
+    </li>
+    <li>
+      news003
+      <input type="text" />
+    </li>
+  </ul>
+</template>
+
+<script>
+  export default {
+    name: 'News',
+    data() {
+      return {
+        opacity: 1
+      }
+    },
+    /* beforeDestroy() {
+      console.log('New组件将被销毁')
+      clearInterval(this.timer)
+    }, */
+    /* mounted() {
+      this.timer = setInterval(() => {
+        this.opacity -= 0.01
+        if (this.opacity <= 0) this.opacity = 1
+      }, 16)
+    }, */
+    activated() {
+      console.log('News组件被激活了')
+      this.timer = setInterval(() => {
+        this.opacity -= 0.01
+        if (this.opacity <= 0) this.opacity = 1
+      }, 16)
+    },
+    deactivated() {
+      console.log('News组件失活了')
+      clearInterval(this.timer)
+    }
+  }
+</script>
+```
+
+### 路由守卫
+
+- 作用：对路由进行权限控制
+- 分类：全局守卫、独享守卫、组件内守卫
+
+**全局守卫**
+
+```js
+// 全局前置守卫：初始化时、每次路由切换前执行
+router.beforeEach((to,from,next) => {
+	console.log('beforeEach',to,from)
+	if(to.meta.isAuth){ // 判断当前路由是否需要进行权限控制
+		if(localStorage.getItem('school') === 'atguigu'){ // 权限控制的具体规则
+			next()	// 放行
+		}else{
+			alert('暂无权限查看')
+		}
+	}else{
+		next()	// 放行
+	}
+})
+
+// 全局后置守卫：初始化时、每次路由切换后执行
+router.afterEach((to,from) => {
+	console.log('afterEach',to,from)
+	if(to.meta.title){ 
+		document.title = to.meta.title //修改网页的title
+	}else{
+		document.title = 'vue_test'
+	}
+})
+```
+
+**独享守卫**
+
+```js
+beforeEnter(to,from,next){
+	console.log('beforeEnter',to,from)
+    if(localStorage.getItem('school') === 'atguigu'){
+        next()
+    }else{
+        alert('暂无权限查看')
+    }
+}
+```
+
+**组件内守卫**
+
+````vue
+//进入守卫：通过路由规则，进入该组件时被调用
+beforeRouteEnter (to, from, next) {... next()},
+
+//离开守卫：通过路由规则，离开该组件时被调用
+beforeRouteLeave (to, from, next) {... next()},
+````
+
+#### 全局路由守卫
+
+**index.js**
+
+````js
+// 该文件专门用于创建整个应用的路由器
+import VueRouter from 'vue-router'
+
+// 引入组件
+import About from '../pages/About'
+import Home from '../pages/Home'
+import News from '../pages/News'
+import Message from '../pages/Message'
+import Detail from '../pages/Detail'
+
+// 创建并暴露一个路由器
+const router = new VueRouter({
+  routes: [
+    {
+      name: 'guanyu',
+      path: '/about',
+      component: About,
+      meta: { title: '关于' }
+    },
+    {
+      name: 'zhuye',
+      path: '/home',
+      component: Home,
+      meta: { title: '主页' },
+      children: [
+        {
+          name: 'xinwen',
+          path: 'news',
+          component: News,
+          meta: { isAuth: true, title: '新闻' }
+        },
+        {
+          name: 'xiaoxi',
+          path: 'message',
+          component: Message,
+          meta: { isAuth: true, title: '消息' },
+          children: [
+            {
+              name: 'xiangqing',
+              path: 'detail',
+              component: Detail,
+              meta: { isAuth: true, title: '详情' },
+
+              // props 的第一种写法，值为对象，该对象中的所有 key-value 都会以 props 的形式传给 Detail 组件
+              // props: { a: 1, b: 'hello' }
+
+              // props 的第一种写法，值为布尔值，若布尔值为真，就会把该路由组件收到的所有 params 参数，以 props 的形式传给 Detail 组件
+              // props: true
+
+              // props 的第一种写法，值为函数，
+              props($route) {
+                return { id: $route.query.id, title: $route.query.title }
+              }
+            }
+          ]
+        },
+      ]
+    },
+  ]
+})
+
+// 全局前置路由守卫————初始化的时候被调用、每次路由切换之前被调用
+router.beforeEach((to, from, next) => {
+  console.log('前置路由守卫', to, from)
+  if (to.meta.isAuth) { // 判断是否需要鉴权
+    if (localStorage.getItem('school') === 'atguigu') {
+      next()
+    } else {
+      alert('学校名不对，无权限查看！')
+    }
+  } else {
+    next()
+  }
+})
+
+// 全局后置路由守卫————初始化的时候被调用、每次路由切换之后被调用
+router.afterEach((to, from) => {
+  console.log('后置路由守卫', to, from)
+  document.title = to.meta.title || '硅谷系统'
+})
+
+export default router
+````
+
+#### 独享路由守卫
+
+**index.js**
+
+```js
+// 该文件专门用于创建整个应用的路由器
+import VueRouter from 'vue-router'
+
+// 引入组件
+import About from '../pages/About'
+import Home from '../pages/Home'
+import News from '../pages/News'
+import Message from '../pages/Message'
+import Detail from '../pages/Detail'
+
+// 创建并暴露一个路由器
+const router = new VueRouter({
+  routes: [
+    {
+      name: 'guanyu',
+      path: '/about',
+      component: About,
+      meta: { title: '关于' }
+    },
+    {
+      name: 'zhuye',
+      path: '/home',
+      component: Home,
+      meta: { title: '主页' },
+      children: [
+        {
+          name: 'xinwen',
+          path: 'news',
+          component: News,
+          meta: { isAuth: true, title: '新闻' },
+          beforeEnter: (to, from, next) => {
+            console.log('前置路由守卫', to, from)
+            if (to.meta.isAuth) { // 判断是否需要鉴权
+              if (localStorage.getItem('school') === 'atguigu') {
+                next()
+              } else {
+                alert('学校名不对，无权限查看！')
+              }
+            } else {
+              next()
+            }
+          },
+        },
+        {
+          name: 'xiaoxi',
+          path: 'message',
+          component: Message,
+          meta: { isAuth: true, title: '消息' },
+          children: [
+            {
+              name: 'xiangqing',
+              path: 'detail',
+              component: Detail,
+              meta: { isAuth: true, title: '详情' },
+
+              // props 的第一种写法，值为对象，该对象中的所有 key-value 都会以 props 的形式传给 Detail 组件
+              // props: { a: 1, b: 'hello' }
+
+              // props 的第一种写法，值为布尔值，若布尔值为真，就会把该路由组件收到的所有 params 参数，以 props 的形式传给 Detail 组件
+              // props: true
+
+              // props 的第一种写法，值为函数，
+              props($route) {
+                return { id: $route.query.id, title: $route.query.title }
+              }
+            }
+          ]
+        },
+      ]
+    },
+  ]
+})
+
+// 全局后置路由守卫————初始化的时候被调用、每次路由切换之后被调用
+router.afterEach((to, from) => {
+  console.log('后置路由守卫', to, from)
+  document.title = to.meta.title || '硅谷系统'
+})
+
+export default router
+```
+
+#### 组件内路由守卫
+
+**About.vue**
+
+```vue
+<template>
+  <h2>我是About的内容</h2>
+</template>
+
+<script>
+  export default {
+    name: 'About',
+    /* mounted() {
+      console.log(this.$route)
+    } */
+
+    // 通过路由规则，进入该组件时会被调用
+    beforeRouteEnter(to, from, next) {
+      console.log('About---beforeRouteEnter', to, from)
+      if (to.meta.isAuth) { // 判断是否需要鉴权
+        if (localStorage.getItem('school') === 'atguigu') {
+          next()
+        } else {
+          alert('学校名不对，无权限查看！')
+        }
+      } else {
+        next()
+      }
+    },
+
+    // 通过路由规则，离开该组件时会被调用
+    beforeRouteLeave(to, from, next) {
+      console.log('About---beforeRouteLeave', to, from)
+      next()
+    }
+  }
+</script>
+```
+
+### 路由器的两种工作模式
+
+- 对于一个url来说，什么是hash值？—— #及其后面的内容就是hash值
+- hash值不会包含在 HTTP 请求中，即：hash值不会带给服务器
+- hash模式：
+  1. 地址中永远带着#号，不美观 
+  2. 若以后将地址通过第三方手机app分享，若app校验严格，则地址会被标记为不合法
+  3. 兼容性较好
+- history模式：
+  1. 地址干净，美观 
+  2. 兼容性和hash模式相比略差
+  3. 应用部署上线时需要后端人员支持，解决刷新页面服务端404的问题
+
+```js
+const router =  new VueRouter({
+	mode:'history',
+	routes:[...]
+})
+
+export default router
+```
+
+## Vue UI 组件库
+
+### 常用UI组件库
+
+**移动端常用UI组件库**
+
+- [Vant](https://youzan.github.io/vant)
+- [Cube UI](https://didi.github.io/cube-ui)
+- [Mint UI](http://mint-ui.github.io/)
+- [NutUI](https://nutui.jd.com/#/)
+
+**PC端常用UI组件库**
+
+- [Element UI](https://element.eleme.cn/)
+- [IView UI](https://www.iviewui.com/)
+
+### element-ui基本使用
+
+安装 element-ui：`npm i element-ui -S`
+
+**main.js**
+
+```js
+// 引入 Vue
+import Vue from 'vue'
+// 引入 App
+import App from './App.vue'
+// 引入 ElementUI 组件库
+import ElementUI from 'element-ui'
+// 引入 ElementUI 全部样式
+import 'element-ui/lib/theme-chalk/index.css'
+
+// 关闭 Vue 的生产提示
+Vue.config.productionTip = false
+// 应用 EementUI
+Vue.use(ElementUI)
+
+// 创建 vm
+new Vue({
+  el: '#app',
+  render: h => h(App),
+})
+```
+
+**App.vue**
+
+```vue
+<template>
+  <div>
+    <button>原生按钮</button>
+    <input type="text" />
+    <el-row>
+      <el-button>默认按钮</el-button>
+      <el-button type="primary">主要按钮</el-button>
+      <el-button type="success">成功按钮</el-button>
+      <el-button type="info">信息按钮</el-button>
+      <el-button type="warning">警告按钮</el-button>
+      <el-button type="danger">危险按钮</el-button>
+    </el-row>
+    <el-date-picker v-model="value1" type="date" placeholder="选择日期"></el-date-picker>
+    <el-row>
+      <el-button icon="el-icon-search" circle></el-button>
+      <el-button type="primary" icon="el-icon-edit" circle></el-button>
+      <el-button type="success" icon="el-icon-check" circle></el-button>
+      <el-button type="info" icon="el-icon-message" circle></el-button>
+      <el-button type="warning" icon="el-icon-star-off" circle></el-button>
+      <el-button type="danger" icon="el-icon-delete" circle></el-button>
+    </el-row>
+  </div>
+</template> 
+
+<script>
+  export default {
+    name: 'App',
+  }
+</script>
+```
+
+![](https://gcore.jsdelivr.net/gh/DouYingc/blogimage/img/202208252234563.png)
+
+### element-ui按需引入
+
+- 安装 babel-plugin-component `npm i babel-plugin-component -D` 
+- 修改 babel-config-js
+
+**修改`babel-config-js`**
+
+```js
+module.exports = {
+  presets: [
+    '@vue/cli-plugin-babel/preset',
+    ["@babel/preset-env", { "modules": false }]
+  ],
+  plugins: [
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
+    ]
+  ]
+}
+```
+
+**main.js**
+
+```js
+// 引入 Vue
+import Vue from 'vue'
+// 引入 App
+import App from './App.vue'
+
+// 完整引入
+// 引入 ElementUI 组件库
+// import ElementUI from 'element-ui'
+// 引入 ElementUI 全部样式
+// import 'element-ui/lib/theme-chalk/index.css'
+
+// 按需引用
+import { Button, Row, DatePicker } from 'element-ui'
+
+// 关闭 Vue 的生产提示
+Vue.config.productionTip = false
+// 应用 EementUI
+// Vue.use(ElementUI)
+Vue.component(Button.name, Button)
+Vue.component(Row.name, Row)
+Vue.component(DatePicker.name, DatePicker)
+
+// 创建 vm
+new Vue({
+  el: '#app',
+  render: h => h(App),
+})
+```
+
